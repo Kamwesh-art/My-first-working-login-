@@ -1,0 +1,191 @@
+<template>
+    
+        <v-img 
+            src="https://imgs.search.brave.com/3ImxtaV_OQaC9i13xFswujAyJmAuW63M2lvE8gNWpjQ/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvMTI4/NjQ2MjI0MC9waG90/by9saWdodC1ncmV5/LWhhbmQtcGFpbnRl/ZC10ZXh0dXJlZC1i/YWNrZHJvcC1zdHVk/aW8td2FsbC5qcGc_/cz02MTJ4NjEyJnc9/MCZrPTIwJmM9X19O/SzFlTXhWcWxRT3Z4/Y3o1SklDRThKN0p6/dVdUc25lMnVIMGps/RlVHVT0"
+            cover
+            height=100vh
+        >
+            <v-container fluid class="fill-height d-flex align-center">
+                <v-row class="fill-height ma-0 justify-center align-center">
+
+                    <v-col cols="12" md="10" lg="8">
+                        <v-card
+                            class="mx-auto"
+                            width="100%"
+                            max-width="960"
+                            min-height="620"
+                            height="620"
+                            elevation="10"
+                            rounded="lg"
+                        >
+                            <v-row no-gutters class="fill-height">
+                                <!-- RIGHT SIDE: image -->
+                                <v-col cols="12" md="6" >
+                                    <v-img src="@/assets/image1.jpg"
+                                      height="100%"
+                                      cover
+                                      > 
+                                      <div class="d-flex flex-column justify-end fill-height pa-10 text-white">
+                                        <h2 class="text-h4 font-weight-bold mb-3">
+                                            Kamwesh Company.
+                                        </h2>
+                                        <p class="text-body-2">
+                                            Precision Storage for Valuable Assets. Locked. Protected.
+                                            Because Every Asset Counts.
+                                        </p>
+                                        </div>
+                                    </v-img>
+                                </v-col>
+
+
+                                <!-- LEFT SIDE: FORM -->
+                                <v-col cols="12" md="6" class="d-flex align-center">
+                                    <div class="pa-12 mx-auto" style="max-width: 420px; width: 100%;">
+
+                                        <div v-if="isLogin">
+                                            <h1 >Welcome back</h1>
+                                            <p>Please enter your details.</p>
+                                        
+                                                <div class="text-subtitle-2 font-weight-bold mb-1">Email</div>
+                                                <v-text-field 
+                                                    variant="outlined"
+                                                    label="Enter your email address "
+                                                    v-model=" email"
+                                                    prepend-inner-icon="mdi-email"
+                                                />
+                                                <div class="text-subtitle-2 font-weight-bold mb-1">Password</div>
+                                                <v-text-field
+                                                    variant="outlined"
+                                                    label="Enter your password"
+                                                    v-model="password"
+                                                    prepend-inner-icon="mdi-lock"
+                                                    :type="showPassword ? 'text' : 'password'"
+                                                    :append-inner-icon="
+                                                            showPassword
+                                                                ? 'mdi-eye-off'
+                                                                : 'mdi-eye'
+                                                        "
+                                                    @click:append-inner="
+                                                    showPassword = !showPassword
+                                                    "
+                                                    />
+                                                    <v-btn
+                                                        variant="text"
+                                                        color="primary"
+                                                        @click="toggleForm"
+                                                        >
+                                                        Forgot password?
+                                                    </v-btn>
+
+                                                    <v-btn 
+                                                        block
+                                                        color="primary"
+                                                        @click="signin"
+                                                        > 
+                                                            Sign in
+                                                        </v-btn>    
+                                                        <div>
+                                                        <span>
+                                                        Don't have an account?
+                                                        </span>                                                
+
+                                                    <v-btn
+                                                        variant="text"
+                                                        color="primary"
+                                                        @click="toggleForm"
+                                                        >
+                                                        Sign up 
+                                                    </v-btn>
+                                                </div>
+                                            </div>
+
+                                      <!-- Registration Form -->
+                                        <div v-else>
+                                            <h2>Create Your account</h2>
+                                                <div class="text-subtitle-2 font-weight-bold mb-1">Full Name</div>
+                                                <v-text-field
+                                                variant="outlined"
+                                                label="Enter your Full Name "
+                                                v-model="fullName"
+                                                prepend-inner-icon="mdi-lock"
+                                                />
+
+                                                <div class="text-subtitle-2 font-weight-bold mb-1">Email Addresss</div>
+                                                <v-text-field
+                                                variant="outlined"
+                                                label="e.g kamwesh@gmail.com"
+                                                v-model="Email"
+                                                prepend-inner-icon="mdi-lock"
+                                                />
+
+                                                <div class="text-subtitle-2 font-weight-bold mb-1">Phone Number</div>
+                                                <v-text-field
+                                                variant="outlined"
+                                                label="e.g 07xxxxxxxx"
+                                                v-model="phone"
+                                                prepend-inner-icon="mdi-lock"
+                                                density="compact"
+                                                />
+                                                                            
+                                                <div class="text-subtitle-2 font-weight-bold mb-1">Password</div>
+                                                <v-text-field
+                                                variant="outlined"
+                                                label="Password at least 10 characters"
+                                                v-model="registrationPassword"
+                                                prepend-inner-icon="mdi-lock"
+                                                :type="showPassword ? 'text' : 'password'"
+                                                :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
+                                                @click:append-inner="showPassword = !showPassword"
+                                                />
+
+                                                <v-btn 
+                                                block
+                                                color="primary"
+                                                > 
+                                                    Create Account
+                                                </v-btn>
+                                                <span>Already have an account?</span>
+
+                                                <v-btn
+                                                variant="text"
+                                                color="primary"
+                                                @click="toggleForm"
+                                                >
+                                                Sign In
+                                                </v-btn>
+                                        </div>
+                                    </div>
+                                </v-col>   
+                            </v-row>
+                        </v-card>
+                    </v-col>
+                </v-row>
+            </v-container>
+         </v-img>
+</template>
+
+<script setup>
+import {ref} from 'vue'
+
+//login state
+const email=ref('')
+const password=ref('')
+
+//registration 
+const fullName=ref('')
+const Email=ref('')
+const phone=ref('')
+const registrationPassword=ref('')
+
+const isLogin=ref(true)
+const toggleForm=()=>{
+    isLogin.value=!isLogin.value
+}
+const signin=()=>{
+    console.log(email.value)
+    console.log(password.value)
+}
+
+const showPassword = ref(false)
+
+</script>
