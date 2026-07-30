@@ -16,6 +16,10 @@ import App from './App.vue'
 // Router
 import router from './router'
 
+//toaster
+import Toast from "vue-toastification"
+import "vue-toastification/dist/index.css"
+
 // Styles
 import 'unfonts.css'
 import 'virtual:uno.css'
@@ -25,6 +29,13 @@ import './styles/main.scss'
 const app = createApp(App)
 
 registerPlugins(app)
+
+app.use(Toast, {
+    position: "top-right",
+    timeout: 3000,
+})
+
+app.mount("#app")
 
 // Register Vue Router
 app.use(router)
