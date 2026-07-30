@@ -47,7 +47,7 @@
                                             <p>Please enter your details.</p>
 
                                             <v-form ref="form">
-                                                    <div class="text-subtitle-2 font-weight-bold mb-1">Email</div>
+                                                <div class="text-subtitle-2 font-weight-bold mb-1">Email</div>
                                                     <v-text-field 
                                                         variant="outlined"
                                                         placeholder="Enter your email"
@@ -90,20 +90,21 @@
                                                                 Sign in
                                                             </v-btn>    
                                                             <div>
-                                                            <span>
-                                                            Don't have an account?
-                                                            </span>                                                
+                                                                <span>
+                                                                Don't have an account?
+                                                                </span>                                                
 
-                                                        <v-btn
-                                                            variant="text"
-                                                            color="primary"
-                                                            @click="toggleForm"
-                                                            >
-                                                            Sign up 
-                                                        </v-btn>
-                                                    </div>
-                                                </div>
+                                                                <v-btn
+                                                                    variant="text"
+                                                                    color="primary"
+                                                                    @click="toggleForm"
+                                                                    >
+                                                                    Sign up 
+                                                                </v-btn>
+                                                            </div>
+                                              
                                             </v-form>
+                                        </div>
 
                                       <!-- Registration Form -->
                                         <div v-else>
@@ -228,6 +229,7 @@ const signin = async () => {
 //         console.log(error.response.data)
 
 // }
+const form = ref(null)
 
 const emailRules = [
     v => !!v || "Email is required",
