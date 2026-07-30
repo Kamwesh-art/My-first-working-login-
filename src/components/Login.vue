@@ -45,61 +45,65 @@
                                         <div v-if="isLogin">
                                             <h1 >Welcome back</h1>
                                             <p>Please enter your details.</p>
-                                        
-                                                <div class="text-subtitle-2 font-weight-bold mb-1">Email</div>
-                                                <v-text-field 
-                                                    variant="outlined"
-                                                    placeholder="Enter your email"
-                                                    v-model=" email"
-                                                    prepend-inner-icon="mdi-email"
-                                                    density="compact"
-                                                />
-                                                <div class="text-subtitle-2 font-weight-bold mb-1">Password</div>
-                                                <v-text-field
-                                                    variant="outlined"
-                                                    placeholder="Enter your password"
-                                                    v-model="password"
-                                                    prepend-inner-icon="mdi-lock"
-                                                    :type="showPassword ? 'text' : 'password'"
-                                                    :append-inner-icon="
-                                                            showPassword
-                                                                ? 'mdi-eye'
-                                                                : 'mdi-eye-off'
-                                                        "
-                                                    @click:append-inner="
-                                                    showPassword = !showPassword
-                                                    "
-                                                    density="compact"
+
+                                            <v-form ref="form">
+                                                    <div class="text-subtitle-2 font-weight-bold mb-1">Email</div>
+                                                    <v-text-field 
+                                                        variant="outlined"
+                                                        placeholder="Enter your email"
+                                                        v-model=" email"
+                                                        :rules="emailRules"
+                                                        prepend-inner-icon="mdi-email"
+                                                        density="compact"
                                                     />
-                                                    <v-btn
-                                                        variant="text"
-                                                        color="primary"
-                                                        @click="toggleForm"
-                                                        >
-                                                        Forgot password?
-                                                    </v-btn>
+                                                    <div class="text-subtitle-2 font-weight-bold mb-1">Password</div>
+                                                    <v-text-field
+                                                        variant="outlined"
+                                                        placeholder="Password at least 8 characters."
+                                                        v-model="password"
+                                                        prepend-inner-icon="mdi-lock"
+                                                        :rules="passwordRules"
+                                                        :type="showPassword ? 'text' : 'password'"
+                                                        :append-inner-icon="
+                                                                showPassword
+                                                                    ? 'mdi-eye'
+                                                                    : 'mdi-eye-off'
+                                                            "
+                                                        @click:append-inner="
+                                                        showPassword = !showPassword
+                                                        "
+                                                        density="compact"
+                                                        />
+                                                        <v-btn
+                                                            variant="text"
+                                                            color="primary"
+                                                            @click="toggleForm"
+                                                            >
+                                                            Forgot password?
+                                                        </v-btn>
 
-                                                    <v-btn 
-                                                        block
-                                                        color="primary"
-                                                        @click="signin"
-                                                        > 
-                                                            Sign in
-                                                        </v-btn>    
-                                                        <div>
-                                                        <span>
-                                                        Don't have an account?
-                                                        </span>                                                
+                                                        <v-btn 
+                                                            block
+                                                            color="primary"
+                                                            @click="signin"
+                                                            > 
+                                                                Sign in
+                                                            </v-btn>    
+                                                            <div>
+                                                            <span>
+                                                            Don't have an account?
+                                                            </span>                                                
 
-                                                    <v-btn
-                                                        variant="text"
-                                                        color="primary"
-                                                        @click="toggleForm"
-                                                        >
-                                                        Sign up 
-                                                    </v-btn>
+                                                        <v-btn
+                                                            variant="text"
+                                                            color="primary"
+                                                            @click="toggleForm"
+                                                            >
+                                                            Sign up 
+                                                        </v-btn>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            </v-form>
 
                                       <!-- Registration Form -->
                                         <div v-else>
@@ -111,15 +115,30 @@
                                                 v-model="username"  
                                                 density="compact"
                                                 />
-
+                                                <v-form ref="form">
                                                 <div class="text-subtitle-2 font-weight-bold mb-1">Email Addresss</div>
                                                 <v-text-field
                                                 variant="outlined"
                                                 placeholder="e.g kamwesh@gmail.com"
                                                 v-model="Email"
+                                                :rules="emailRules"
                                                 density="compact"
                                                 />
-                                                                           
+                                               
+                                                <div class="text-subtitle-2 font-weight-bold mb-1">Password</div>
+                                                <v-text-field
+                                                variant="outlined"
+                                                placeholder="Password at least 8 characters"
+                                                v-model="registrationPassword"
+                                                prepend-inner-icon="mdi-lock"
+                                                :rules="passwordRules"
+                                                :type="showPassword ? 'text' : 'password'"
+                                                :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                                                @click:append-inner="showPassword = !showPassword"
+                                                density="compact"
+                                                />
+                                                </v-form>
+                                                
                                                 <div class="text-subtitle-2 font-weight-bold mb-1">Department</div>
                                                 <v-text-field
                                                 variant="outlined"
@@ -127,19 +146,6 @@
                                                 v-model="department"
                                                 density="compact"
                                                 />
-                                                
-                                                <div class="text-subtitle-2 font-weight-bold mb-1">Password</div>
-                                                <v-text-field
-                                                variant="outlined"
-                                                placeholder="Password at least 10 characters"
-                                                v-model="registrationPassword"
-                                                prepend-inner-icon="mdi-lock"
-                                                :type="showPassword ? 'text' : 'password'"
-                                                :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                                                @click:append-inner="showPassword = !showPassword"
-                                                density="compact"
-                                                />
-
                                                 <v-btn 
                                                 block
                                                 color="primary"
@@ -223,7 +229,17 @@ const signin = async () => {
 
 // }
 
+const emailRules = [
+    v => !!v || "Email is required",
 
+    v => /.+@.+\..+/.test(v) || "Enter a valid email address",
+]
+
+const passwordRules = [
+    v => !!v || "Password is required",
+
+    v => v.length >= 8 || "Password must be at least 8 characters",
+]
 
 const showPassword = ref(false)
 
