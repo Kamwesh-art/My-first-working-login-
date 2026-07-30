@@ -19,7 +19,7 @@
                             rounded="lg"
                         >
                             <v-row no-gutters class="fill-height">
-                                <!-- RIGHT SIDE: image -->
+                                <!-- LEFT SIDE: image -->
                                 <v-col cols="12" md="6" >
                                     <v-img src="@/assets/image1.jpg"
                                       height="100%"
@@ -38,7 +38,7 @@
                                 </v-col>
 
 
-                                <!-- LEFT SIDE: FORM -->
+                                <!-- RIGHT SIDE: FORM -->
                                 <v-col cols="12" md="6" class="d-flex align-center">
                                     <div class="pa-12 mx-auto" style="max-width: 420px; width: 100%;">
 
@@ -49,25 +49,27 @@
                                                 <div class="text-subtitle-2 font-weight-bold mb-1">Email</div>
                                                 <v-text-field 
                                                     variant="outlined"
-                                                    label="Enter your email address "
+                                                    placeholder="Enter your email"
                                                     v-model=" email"
                                                     prepend-inner-icon="mdi-email"
+                                                    density="compact"
                                                 />
                                                 <div class="text-subtitle-2 font-weight-bold mb-1">Password</div>
                                                 <v-text-field
                                                     variant="outlined"
-                                                    label="Enter your password"
+                                                    placeholder="Enter your password"
                                                     v-model="password"
                                                     prepend-inner-icon="mdi-lock"
                                                     :type="showPassword ? 'text' : 'password'"
                                                     :append-inner-icon="
                                                             showPassword
-                                                                ? 'mdi-eye-off'
-                                                                : 'mdi-eye'
+                                                                ? 'mdi-eye'
+                                                                : 'mdi-eye-off'
                                                         "
                                                     @click:append-inner="
                                                     showPassword = !showPassword
                                                     "
+                                                    density="compact"
                                                     />
                                                     <v-btn
                                                         variant="text"
@@ -102,45 +104,46 @@
                                       <!-- Registration Form -->
                                         <div v-else>
                                             <h2>Create Your account</h2>
-                                                <div class="text-subtitle-2 font-weight-bold mb-1">Full Name</div>
+                                                <div class="text-subtitle-2 font-weight-bold mb-1">Username</div>
                                                 <v-text-field
                                                 variant="outlined"
-                                                label="Enter your Full Name "
-                                                v-model="fullName"
-                                                prepend-inner-icon="mdi-lock"
+                                                placeholder="Enter your username"
+                                                v-model="username"  
+                                                density="compact"
                                                 />
 
                                                 <div class="text-subtitle-2 font-weight-bold mb-1">Email Addresss</div>
                                                 <v-text-field
                                                 variant="outlined"
-                                                label="e.g kamwesh@gmail.com"
+                                                placeholder="e.g kamwesh@gmail.com"
                                                 v-model="Email"
-                                                prepend-inner-icon="mdi-lock"
-                                                />
-
-                                                <div class="text-subtitle-2 font-weight-bold mb-1">Phone Number</div>
-                                                <v-text-field
-                                                variant="outlined"
-                                                label="e.g 07xxxxxxxx"
-                                                v-model="phone"
-                                                prepend-inner-icon="mdi-lock"
                                                 density="compact"
                                                 />
-                                                                            
+                                                                           
+                                                <div class="text-subtitle-2 font-weight-bold mb-1">Department</div>
+                                                <v-text-field
+                                                variant="outlined"
+                                                placeholder="e.g Techteam "
+                                                v-model="department"
+                                                density="compact"
+                                                />
+                                                
                                                 <div class="text-subtitle-2 font-weight-bold mb-1">Password</div>
                                                 <v-text-field
                                                 variant="outlined"
-                                                label="Password at least 10 characters"
+                                                placeholder="Password at least 10 characters"
                                                 v-model="registrationPassword"
                                                 prepend-inner-icon="mdi-lock"
                                                 :type="showPassword ? 'text' : 'password'"
-                                                :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
+                                                :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                                                 @click:append-inner="showPassword = !showPassword"
+                                                density="compact"
                                                 />
 
                                                 <v-btn 
                                                 block
                                                 color="primary"
+                                                @click="signup"
                                                 > 
                                                     Create Account
                                                 </v-btn>
@@ -166,25 +169,61 @@
 
 <script setup>
 import {ref} from 'vue'
+import api from "@/api/axios"
 
 //login state
 const email=ref('')
 const password=ref('')
 
 //registration 
-const fullName=ref('')
+const username=ref('')
 const Email=ref('')
-const phone=ref('')
 const registrationPassword=ref('')
+const department=ref('')
 
 const isLogin=ref(true)
 const toggleForm=()=>{
     isLogin.value=!isLogin.value
 }
-const signin=()=>{
+
+const signin = async () => {
     console.log(email.value)
     console.log(password.value)
-}
+    try{
+        const payload = {
+            username:email.value,
+            password:password.value,
+        }
+       const response = api.post("login/", payload,)
+        console.log(response.data)
+    }catch(error){
+        console.log(error.response.data)
+    }
+    }
+
+
+// const signup = async () => {
+
+    
+// try{
+//         const response = await api.post("register/",{
+
+//             username:username.value,
+//             email:Email.value,
+//             password:registrationPassword.value,
+//             department:department.value,
+
+//         })
+
+//         console.log(response.data)
+
+//     }catch(error){
+
+//         console.log(error.response.data)
+
+// }
+
+
 
 const showPassword = ref(false)
 
