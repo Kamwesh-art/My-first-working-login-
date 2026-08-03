@@ -177,6 +177,7 @@
 <script setup>
 import {ref} from 'vue'
 import api from "@/api/axios"
+import {useToast} from "vue-toastification"
 
 //login state
 const email=ref('')
@@ -193,7 +194,7 @@ const toggleForm=()=>{
     isLogin.value=!isLogin.value
 }
 
-const signin = async () => {
+const signup= async () => {
     console.log(email.value)
     console.log(password.value)
     try{
@@ -201,13 +202,17 @@ const signin = async () => {
             username:email.value,
             password:password.value,
         }
-       const response = api.post("login/", payload,)
+       const response =await api.post("signup/", payload,)
         console.log(response.data)
-    }catch(error){
-        console.log(error.response.data)
-    }
-    }
+        toast.success('Registration successful')
 
+    }catch(error){
+        toast.error(
+            error.response?.data?.detail ||
+            "Invalid username or password"
+    )
+    }
+    }
 
 // const signup = async () => {
 
@@ -229,6 +234,16 @@ const signin = async () => {
 //         console.log(error.response.data)
 
 // }
+
+const register = async () => {
+
+    const { valid } = await form.value.validate()
+
+    if (!valid) return
+
+    // Send data to Django
+}
+
 const form = ref(null)
 
 const emailRules = [
@@ -244,5 +259,7 @@ const passwordRules = [
 ]
 
 const showPassword = ref(false)
+const toast=useToast()
+
 
 </script>

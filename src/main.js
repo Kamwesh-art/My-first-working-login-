@@ -28,6 +28,7 @@ import './styles/main.scss'
 
 const app = createApp(App)
 
+// Toaster
 registerPlugins(app)
 
 app.use(Toast, {
