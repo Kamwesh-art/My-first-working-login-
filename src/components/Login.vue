@@ -194,6 +194,7 @@ const toggleForm=()=>{
     isLogin.value=!isLogin.value
 }
 
+
 const signup= async () => {
     console.log(email.value)
     console.log(password.value)
