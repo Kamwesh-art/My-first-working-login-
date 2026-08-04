@@ -204,6 +204,7 @@ const signup= async () => {
         return
     }
 
+    
     try{
         const payload = {
             username:username.value,
