@@ -204,7 +204,7 @@ const signup= async () => {
         return
     }
 
-    
+
     try{
         const payload = {
             username:username.value,
@@ -217,6 +217,12 @@ const signup= async () => {
        const response =await api.post("register/", payload,)
         console.log(response.data)
         toast.success('Registration successful')
+
+        //clear function 
+        clearRegistrationForm()
+        // show login page
+        isLogin.value= true
+
     }catch (error) {
 
     if (error.response) {
