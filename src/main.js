@@ -31,6 +31,9 @@ const app = createApp(App)
 // Toaster
 registerPlugins(app)
 
+// Register Vue Router
+app.use(router)
+
 app.use(Toast, {
     position: "top-right",
     timeout: 3000,
@@ -38,7 +41,5 @@ app.use(Toast, {
 
 app.mount("#app")
 
-// Register Vue Router
-app.use(router)
 
-app.mount('#app')
+

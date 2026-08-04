@@ -3,7 +3,7 @@
         <v-img 
             src="https://imgs.search.brave.com/3ImxtaV_OQaC9i13xFswujAyJmAuW63M2lvE8gNWpjQ/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvMTI4/NjQ2MjI0MC9waG90/by9saWdodC1ncmV5/LWhhbmQtcGFpbnRl/ZC10ZXh0dXJlZC1i/YWNrZHJvcC1zdHVk/aW8td2FsbC5qcGc_/cz02MTJ4NjEyJnc9/MCZrPTIwJmM9X19O/SzFlTXhWcWxRT3Z4/Y3o1SklDRThKN0p6/dVdUc25lMnVIMGps/RlVHVT0"
             cover
-            height=100vh
+            height='100vh'
         >
             <v-container fluid class="fill-height d-flex align-center">
                 <v-row class="fill-height ma-0 justify-center align-center">
@@ -47,11 +47,11 @@
                                             <p>Please enter your details.</p>
 
                                             <v-form ref="form">
-                                                <div class="text-subtitle-2 font-weight-bold mb-1">Email</div>
+                                                <div class="text-subtitle-2 font-weight-bold mb-1">Email/Username</div>
                                                     <v-text-field 
                                                         variant="outlined"
-                                                        placeholder="Enter your email"
-                                                        v-model=" email"
+                                                        placeholder="Enter your email or Username"
+                                                        v-model=" emailUsername"
                                                         :rules="emailRules"
                                                         prepend-inner-icon="mdi-email"
                                                         density="compact"
@@ -114,6 +114,7 @@
                                                 variant="outlined"
                                                 placeholder="Enter your username"
                                                 v-model="username"  
+                                                :rules="userrnameRules"
                                                 density="compact"
                                                 />
                                                 <v-form ref="form">
@@ -121,7 +122,7 @@
                                                 <v-text-field
                                                 variant="outlined"
                                                 placeholder="e.g kamwesh@gmail.com"
-                                                v-model="Email"
+                                                v-model="email"
                                                 :rules="emailRules"
                                                 density="compact"
                                                 />
@@ -130,7 +131,7 @@
                                                 <v-text-field
                                                 variant="outlined"
                                                 placeholder="Password at least 8 characters"
-                                                v-model="registrationPassword"
+                                                v-model="password"
                                                 prepend-inner-icon="mdi-lock"
                                                 :rules="passwordRules"
                                                 :type="showPassword ? 'text' : 'password'"
@@ -145,6 +146,7 @@
                                                 variant="outlined"
                                                 placeholder="e.g Techteam "
                                                 v-model="department"
+                                                :rules="departmentRules"
                                                 density="compact"
                                                 />
                                                 <v-btn 
@@ -185,9 +187,8 @@ const password=ref('')
 
 //registration 
 const username=ref('')
-const Email=ref('')
-const registrationPassword=ref('')
 const department=ref('')
+const emailUsername=ref('')
 
 const isLogin=ref(true)
 const toggleForm=()=>{
@@ -196,57 +197,74 @@ const toggleForm=()=>{
 
 
 const signup= async () => {
-    console.log(email.value)
-    console.log(password.value)
-    try{
-        const payload = {
-            username:email.value,
-            password:password.value,
-        }
-       const response =await api.post("signup/", payload,)
-        console.log(response.data)
-        toast.success('Registration successful')
-
-    }catch(error){
-        toast.error(
-            error.response?.data?.detail ||
-            "Invalid username or password"
-    )
-    }
-    }
-
-// const signup = async () => {
-
-    
-// try{
-//         const response = await api.post("register/",{
-
-//             username:username.value,
-//             email:Email.value,
-//             password:registrationPassword.value,
-//             department:department.value,
-
-//         })
-
-//         console.log(response.data)
-
-//     }catch(error){
-
-//         console.log(error.response.data)
-
-// }
-
-const register = async () => {
-
     const { valid } = await form.value.validate()
 
-    if (!valid) return
+    if (!valid) {
+        toast.error("Please fill all required fields.")
+        return
+    }
 
-    // Send data to Django
+    try{
+        const payload = {
+            username:username.value,
+            email:email.value,
+            password: password.value,
+            department: department.value,
+        }
+        console.log(payload)
+
+       const response =await api.post("register/", payload,)
+        console.log(response.data)
+        toast.success('Registration successful')
+    }catch (error) {
+
+    if (error.response) {
+
+        const errors = error.response.data
+
+        Object.values(errors).flat().forEach(message => {
+            toast.error(message)
+        })
+
+    } else {
+
+        toast.error("Something went wrong.")
+
+    }
+
+}
+    }
+
+//create a clear registration function
+const clearRegistrationForm = () => {
+    username.value = ""
+    email.value = ""
+    password.value = ""
+    department.value = ""
+}
+
+const signin= async()=>{
+    try{
+        const payload ={
+            username:emailUsername.value,
+            password:password.value,
+            }
+            console.log(payload)
+
+         const response =await api.post("login/", payload,)
+        console.log(response.data)
+        toast.success('Login successful')
+
+        }catch(error){
+            toast.error('Login failure')
+
+        }
 }
 
 const form = ref(null)
-
+const userrnameRules=[
+    v=> !!v || 'Username is required'
+]
 const emailRules = [
     v => !!v || "Email is required",
 
@@ -258,7 +276,9 @@ const passwordRules = [
 
     v => v.length >= 8 || "Password must be at least 8 characters",
 ]
-
+const departmentRules=[
+    v=> !!v || 'Department is required'
+]
 const showPassword = ref(false)
 const toast=useToast()
 
