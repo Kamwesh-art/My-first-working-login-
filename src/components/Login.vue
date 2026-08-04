@@ -180,6 +180,7 @@
 import {ref} from 'vue'
 import api from "@/api/axios"
 import {useToast} from "vue-toastification"
+import { useRouter } from 'vue-router'
 
 //login state
 const email=ref('')
@@ -236,10 +237,8 @@ const signup= async () => {
     } else {
 
         toast.error("Something went wrong.")
-
     }
-
-}
+    }
     }
 
 //create a clear registration function
@@ -256,11 +255,17 @@ const signin= async()=>{
             username:emailUsername.value,
             password:password.value,
             }
-            console.log(payload)
+        
+            const response =await api.post("login/", payload,)
+        
+        // localStorage.setItem("access",response.data.access)
 
-         const response =await api.post("login/", payload,)
-        console.log(response.data)
+        // localStorage.setItem("refresh",response.data.refresh)
+
+        // localStorage.setItem("username",response.data.username)
+
         toast.success('Login successful')
+        router.push("/home")
 
         }catch(error){
             toast.error('Login failure')
@@ -277,7 +282,6 @@ const emailRules = [
 
     v => /.+@.+\..+/.test(v) || "Enter a valid email address",
 ]
-
 const passwordRules = [
     v => !!v || "Password is required",
 
@@ -288,6 +292,6 @@ const departmentRules=[
 ]
 const showPassword = ref(false)
 const toast=useToast()
-
+const router = useRouter()
 
 </script>
