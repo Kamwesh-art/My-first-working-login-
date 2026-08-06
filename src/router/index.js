@@ -1,6 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '@/components/Home.vue'
-import Login from '@/components/Login.vue'
+import Home from '@/views/Home.vue'
+import Login from '@/views/Login.vue'
+import Possessions from '@/views/possessions.vue'
+import Tasks from '@/views/tasks.vue' 
+import profile from '@/views/profile.vue' 
+import Profile from '../views/profile.vue'
 
 const routes = [
   {
@@ -12,7 +16,23 @@ const routes = [
     path: '/home',
     name: 'home',
     component: Home,
+  },
+  {
+    path: '/possessions',
+    name: 'possessions',
+    component: Possessions,
+  },
+  {
+    path: '/tasks',
+    name: 'tasks',
+    component: Tasks,
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: Profile,
   }
+
 ]
 
 const router = createRouter({
