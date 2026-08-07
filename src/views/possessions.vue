@@ -1,136 +1,148 @@
 <template>
-    <v-container>
-        <v-card class="pa-5">
-            <v-row class="align-center mb-5">
-                <v-col>
-                    <h2>Possessions</h2>
-                </v-col>
-                
-                <v-col class="text-right">
-                    <v-btn 
-                    @click="dialog=true"
-                    color="primary"
-                    >
-                    Add possession
-                </v-btn>
-                </v-col>
-            </v-row>
-
-            <v-table>
-                <thead>
-                    <tr>
-
-                        <th>User</th>
-                        <th>Serial No.</th>
-                        <th>Item</th>
-                        <th>Quantity</th>
-                        <th>Cost</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <tr
-                    v-for="item in possessions"
-                    :key="item.id"
-                    >
-                        <td>{{ item.user }}</td>
-                        <td>{{ item.serialno}}</td>
-                        <td>{{ item.item }}</td>
-                        <td>{{ item.quantity }}</td>
-                        <td>{{ item.cost }}</td>
-                        
-                        <td>
-                            <v-btn
-                            class="ma-2"
-                            icon="mdi-pencil"
-                            size="small"
-                            variant="text"
-                            color="blue"
-                            />
-
-                            <v-btn
-                            class="ma-2"
-                            icon="mdi-delete"
-                            size="small"
-                            variant="text"
-                            color="red"
-                            />
-                        </td>
-                    </tr>
-                </tbody>
-            </v-table>
-
-            <!-- creation of a table dialog -->
-                <v-dialog
-                    v-model="dialog"
-                    max-width="600"
-                    >
-                    <v-card>
-
-                        <v-card-title>
-
-                         {{username}} Possession
-
-                        </v-card-title>
-
-                        <v-card-text>
-                            <v-text-field
-                            label="User"
-                            v-model="user"
-                            />
-
-                            <v-text-field
-                            label="Serial No."
-                            v-model="serialno"
-                            />
-
-                            <v-text-field
-                            label="Item"
-                            v-model="item"
-                            />
-
-                            <v-text-field
-                            label="Quantity"
-                            v-model="quantity"
-                            />
+            
+           <v-img src="@/assets/image1.jpg"
+            height="100%"
+            cover 
+            >
+                <v-container>
+                    <v-card class="pa-5">
+                        <v-row class="align-center mb-5">
+                            <v-col>
+                                <h2>Possessions</h2>
+                            </v-col>
                             
-                            <v-text-field
-                            label="Cost"
-                            v-model="cost"
-                            />
-
-
-
-                            <v-card-actions>
-                                <v-spacer/>
-                                <v-btn
-                                text
-                                @click="dialog=false"
-                                >
-                                Cancel
-                                </v-btn>
-
-                                <v-btn
+                            <v-col class="text-right">
+                                <v-btn 
+                                @click="dialog=true"
                                 color="primary"
-                                @click="savePossession"
                                 >
-                                Save
-                                </v-btn>
+                                Add possession
+                            </v-btn>
+                            </v-col>
+                        </v-row>
 
-                            </v-card-actions>
+                        <v-data-table>
+                            <thead>
+                                <tr>
+                                    <th>Serial No.</th>
+                                    <th>Item</th>
+                                    <th>Quantity</th>
+                                    <th>Cost</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
 
-                        </v-card-text>
+                            <tbody>
+                                <tr
+                                v-for="item in possessions"
+                                :key="item.id"
+                                >
+                                    <td>{{ item.serialno}}</td>
+                                    <td>{{ item.item }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>{{ item.cost }}</td>
+                                    
+                                    <td>
+                                        <v-btn
+                                        class="ma-2"
+                                        icon="mdi-pencil"
+                                        size="small"
+                                        variant="text"
+                                        color="blue"
+                                        />
+
+                                        <v-btn
+                                        class="ma-2"
+                                        icon="mdi-delete"
+                                        size="small"
+                                        variant="text"
+                                        color="red"
+                                        />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </v-data-table>
+
+                        <!-- creation of a table dialog -->
+                            <v-dialog
+                                v-model="dialog"
+                                max-width="600"
+                                >
+                                <v-card>
+
+                                    <v-card-title>
+                                    Possession
+                                    </v-card-title>
+
+                                    <v-card-text>
+                                        <v-row>
+                                            <v-col cols="12" md="6">
+                                                Serial Number
+                                                <v-text-field
+                                                placeholder="Serial No."
+                                                v-model="serialno"
+                                                Serial Number
+                                                />
+                                            </v-col>
+                                            <v-col cols="12" md="6">
+                                                Item
+                                                <v-text-field
+                                                placeholder="Item"
+                                                v-model="item"
+                                                />
+                                            </v-col>
+                                        </v-row>
+
+                                        <v-row> 
+                                                <v-col cols="12" md="6">
+                                                Quantity
+                                                <v-text-field
+                                                placeholder="Quantity"
+                                                v-model="quantity"
+                                                Serial Number
+                                                />
+                                            </v-col>
+                                            <v-col cols="12" md="6">
+                                                Cost
+                                                <v-text-field
+                                                placeholder="Cost"
+                                                v-model="cost"
+                                                />
+                                            </v-col>
+                                        </v-row>
+
+                                        <v-card-actions>
+                                            <v-spacer/>
+                                            <v-btn
+                                            text
+                                            @click="dialog=false"
+                                            >
+                                            Cancel
+                                            </v-btn>
+
+                                            <v-btn
+                                            color="primary"
+                                            @click="savePossession"
+                                            >
+                                            Save
+                                            </v-btn>
+
+                                        </v-card-actions>
+
+                                    </v-card-text>
+
+                                </v-card>
+
+                            </v-dialog>
 
                     </v-card>
-
-                </v-dialog>
-
-        </v-card>
-    </v-container>
+                </v-container>
+            </v-img>
 </template>
 <script setup>
 import { ref,onMounted } from "vue"
 import api from "@/api/axios"
+import { useToast } from "vue-toastification"
 
 
 const user=ref("")
@@ -197,5 +209,6 @@ const fetchPossessions = async () => {
     }
 }
 const dialog = ref(false)
+const toast = useToast()
 
 </script>
