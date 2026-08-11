@@ -1,10 +1,6 @@
 <template>
      <v-app>    
         <v-main>
-            <v-img src="@/assets/image1.jpg"
-            height="100%"
-            cover
-            > 
                 <v-container class="fill-height">
                     <v-row
                         justify="center"
@@ -15,7 +11,6 @@
                         </v-col>
                     </v-row>
                 </v-container>
-            </v-img>
         </v-main>
     </v-app>
 </template>

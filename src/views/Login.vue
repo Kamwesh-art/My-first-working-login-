@@ -247,14 +247,16 @@ const clearRegistrationForm = () => {
 }
 
 const signin= async()=>{
+        localStorage.removeItem("access")
+        localStorage.removeItem("refresh")
+        
     try{
         const payload ={
             username:emailUsername.value,
             password:password.value,
             }
-        
             const response =await api.post("login/", payload,)
-        
+
         localStorage.setItem("access",response.data.access)
         localStorage.setItem("refresh",response.data.refresh)
         localStorage.setItem("username",response.data.username)
@@ -264,7 +266,6 @@ const signin= async()=>{
 
         }catch(error){
             toast.error('Login failure')
-
         }
 }
 

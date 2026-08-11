@@ -1,67 +1,66 @@
 <template>
-            
-           <v-img src="@/assets/image1.jpg"
-            height="100%"
-            cover 
-            >
-                <v-container>
-                    <v-card class="pa-5">
-                        <v-row class="align-center mb-5">
-                            <v-col>
-                                <h2>Possessions</h2>
-                            </v-col>
+    <v-img 
+    src="https://imgs.search.brave.com/3ImxtaV_OQaC9i13xFswujAyJmAuW63M2lvE8gNWpjQ/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvMTI4/NjQ2MjI0MC9waG90/by9saWdodC1ncmV5/LWhhbmQtcGFpbnRl/ZC10ZXh0dXJlZC1i/YWNrZHJvcC1zdHVk/aW8td2FsbC5qcGc_/cz02MTJ4NjEyJnc9/MCZrPTIwJmM9X19O/SzFlTXhWcWxRT3Z4/Y3o1SklDRThKN0p6/dVdUc25lMnVIMGps/RlVHVT0"
+    cover
+    height='100vh'
+    >   
+        <v-container>
+            <v-card class="pa-5">
+                <v-row class="align-center mb-5">
+                    <v-col>
+                    <h2>Possessions</h2>
+                    </v-col>
+                
+                    <v-col class="text-right">
+                        <v-btn 
+                        @click="dialog=true"
+                        color="grey-lighten-2"
+                        >
+                        Add possession
+                        </v-btn>
+                    </v-col>
+                </v-row>
+
+                <v-data-table>
+                    <thead>
+                        <tr>
+                            <th>Serial No.</th>
+                            <th>Item</th>
+                            <th>Quantity</th>
+                            <th>Cost(Ksh)</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr
+                        v-for="item in possessions"
+                        :key="item.id"
+                        >
+                            <td>{{ item.serialno}}</td>
+                            <td>{{ item.item }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>{{ item.cost }}</td>
                             
-                            <v-col class="text-right">
-                                <v-btn 
-                                @click="dialog=true"
-                                color="primary"
-                                >
-                                Add possession
-                            </v-btn>
-                            </v-col>
-                        </v-row>
-
-                        <v-data-table>
-                            <thead>
-                                <tr>
-                                    <th>Serial No.</th>
-                                    <th>Item</th>
-                                    <th>Quantity</th>
-                                    <th>Cost</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                <tr
-                                v-for="item in possessions"
-                                :key="item.id"
-                                >
-                                    <td>{{ item.serialno}}</td>
-                                    <td>{{ item.item }}</td>
-                                    <td>{{ item.quantity }}</td>
-                                    <td>{{ item.cost }}</td>
-                                    
-                                    <td>
-                                        <v-btn
-                                        class="ma-2"
-                                        icon="mdi-pencil"
-                                        size="small"
-                                        variant="text"
-                                        color="blue"
-                                        />
-
-                                        <v-btn
-                                        class="ma-2"
-                                        icon="mdi-delete"
-                                        size="small"
-                                        variant="text"
-                                        color="red"
-                                        />
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </v-data-table>
+                            <td>
+                                <v-btn
+                                class="ma-2"
+                                icon="mdi-pencil"
+                                size="small"
+                                variant="text"
+                                color="blue"
+                                />
+                                <v-btn
+                                class="ma-2"
+                                icon="mdi-delete"
+                                size="small"
+                                variant="text"
+                                color="red"
+                                />
+                            </td>
+                        </tr>
+                    </tbody>
+                </v-data-table>
 
                         <!-- creation of a table dialog -->
                             <v-dialog
@@ -137,70 +136,45 @@
 
                     </v-card>
                 </v-container>
-            </v-img>
+    </v-img>
 </template>
+
 <script setup>
 import { ref,onMounted } from "vue"
 import api from "@/api/axios"
 import { useToast } from "vue-toastification"
-
-
-const user=ref("")
 const serialno = ref("")
 const item = ref("")
 const quantity = ref("")
 const cost = ref("")
 
-const savePossession = () => {
+const savePossession = async() => {
+    try{
+    const payload={
+            // id: Date.now(),
+            serialno: serialno.value,
+            item: item.value,
+            quantity: quantity.value,
+            cost: cost.value,
 
-    possessions.value.push({
+        } 
+    await api.post("possessions/",payload)
 
-        id: Date.now(),
-        user: user.value,
-        serialno: serialno.value,
-        item: item.value,
-        quantity: quantity.value,
-        cost: cost.value,
+        fetchPossessions()
+        dialog.value = false
 
-    })
-
-    dialog.value = false
-
-    user.value = ""
-    serialno.value = ""
-    item.value = ""
-    quantity.value = ""
-    cost.value = ""
-}
-
-const possessions = ref([
-    // {
-    //     id:1,
-    //     user:"Me",
-    //     serialno:"4",
-    //     item:"Laptop",
-    //     quantity:"1",
-    //     cost:"50,000",
-    // },
-    // {
-    //     id:1,
-    //     user:"Faith",
-    //     serialno:"2",
-    //     item:"Phone",
-    //     quantity:"2",
-    //     cost:"30,000",
-    // },
-    // {
-    //     id:1,
-    //     user:"Sam",
-    //     serialno:"8",
-    //     item:"Headphones",
-    //     quantity:"1",
-    //     cost:"3,000",
-    //  }
-]);
+        serialno.value = ""
+        item.value = ""
+        quantity.value = ""
+        cost.value = ""
+        }
+        catch(error){
+            console.log(error.response?.data)
+        }
+    }
+    // const possessions = ref([]);
 const fetchPossessions = async () => {
-    try {
+        try {
         const response = await api.get("possessions/");
         possessions.value = response.data;
     } catch (error) {

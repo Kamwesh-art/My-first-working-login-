@@ -10,29 +10,58 @@
         </v-text>
         <v-spacer></v-spacer>
         <v-list>
-            <v-list-item 
-            variant="text"
-            to="/home"
-            text="Home"
-            />
+                 <v-list-item to="/profile"
+>
+                <template #prepend >
+                    <v-icon>mdi-account</v-icon>
+                </template>
 
-            <v-list-item
-            variant="text"
-            to="/possessions"
-            text="Possessions"
-            />
+                <template #title>
+                    Profile 
+                </template> 
+
+            </v-list-item to="/profile"
+>
+               <v-list-item to="/profile"
+>
+                <template #prepend>
+                    <v-icon>mdi-home</v-icon>
+                </template>
+
+                <template #title>
+                    Home 
+                </template> 
+            </v-list-item>
+
+            <v-list-item>
+                <template #prepend>
+                    <v-icon>mdi-package-variant</v-icon>
+                </template>
+
+                <template #title>
+                    Possessions
+                </template> 
+            </v-list-item>
             
-            <v-list-item
-            variant="text"
-            to="/task"
-            text="Tasks"
-            />
+             <v-list-item>
+                <template #prepend>
+                    <v-icon>mdi-account-hard-hat</v-icon>
+                </template>
 
-            <v-list-item
-            variant="text"
-            to="/checkin"
-            text="Checkin"
-            />
+                <template #title>
+                    Tasks 
+                </template> 
+            </v-list-item>
+ 
+            <v-list-item>
+                <template #prepend>
+                    <v-icon>mdi-clipboard-text-clock-outline</v-icon>
+                </template>
+
+                <template #title>
+                    Checkin 
+                </template> 
+            </v-list-item>
 
             <v-list-item
             variant="text"
