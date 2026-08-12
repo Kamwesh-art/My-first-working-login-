@@ -1,10 +1,56 @@
 <template>
+    <v-menu>
+        <template #activator="{ props }">
+            <v-btn
+                v-bind="props"
+                variant="text"
+            >
+            <v-icon start>
+                mdi-account-circle
+            </v-icon>
+
+            {{ username }}
+
+            <v-icon end>
+                mdi-chevron-down
+            </v-icon>
+            </v-btn>
+        </template>
+        <v-list>
+
+            <!-- Profile -->
+            <v-list-item to="/profile">
+                <template #prepend>
+                    <v-icon>
+                        mdi-account
+                    </v-icon>
+                </template>
+
+                <v-list-item-title>
+                    Profile
+                </v-list-item-title>
+            </v-list-item>
+
+            <v-divider></v-divider>
+
+            <!-- Logout -->
+            <v-list-item @click="logout">
+
+                <template #prepend>
+                    <v-icon>
+                        mdi-power
+                    </v-icon>
+                </template>
+
+                <v-list-item-title>
+                    Logout
+                </v-list-item-title>
+
+            </v-list-item>
+
+        </v-list>
+    </v-menu>
     <v-navigation-drawer v-model= "drawer" permanent>
-        <v-img 
-            src="https://imgs.search.brave.com/3ImxtaV_OQaC9i13xFswujAyJmAuW63M2lvE8gNWpjQ/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvMTI4/NjQ2MjI0MC9waG90/by9saWdodC1ncmV5/LWhhbmQtcGFpbnRl/ZC10ZXh0dXJlZC1i/YWNrZHJvcC1zdHVk/aW8td2FsbC5qcGc_/cz02MTJ4NjEyJnc9/MCZrPTIwJmM9X19O/SzFlTXhWcWxRT3Z4/Y3o1SklDRThKN0p6/dVdUc25lMnVIMGps/RlVHVT0"
-            cover
-            height='100vh'
-        >
         <v-text>
             <h1> Kamwesh Company</h1>
         </v-text>
@@ -59,22 +105,16 @@
                         Check in 
                     </template> 
                 </v-list-item>
-
-                <v-list-item
-                variant="text"
-                to="/profile"
-                text="Profile"
-                />
-        </v-list>
-        </v-img>
-    
+            </v-list>
     </v-navigation-drawer>
     
 
 </template>
 <script setup>
-
 import{ref} from "vue"
+import { useRouter } from 'vue-router'
+
 const drawer =ref(true)
+
 
 </script>
