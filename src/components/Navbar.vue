@@ -1,69 +1,78 @@
 <template>
-    <v-menu>
-        <template #activator="{ props }">
-            <v-btn
-                v-bind="props"
-                variant="text"
-            >
-            <v-icon start>
-                mdi-account-circle
-            </v-icon>
-
-            {{ username }}
-
-            <v-icon end>
-                mdi-chevron-down
-            </v-icon>
-            </v-btn>
-        </template>
-
-        <v-list>
-
-            <!-- Profile -->
-            <v-list-item to="/profile">
-                <template #prepend>
-                    <v-icon>
-                        mdi-account
-                    </v-icon>
-                </template>
-
-                <v-list-item-title>
-                    Profile
-                </v-list-item-title>
-            </v-list-item>
-
-            <v-divider></v-divider>
-
-            <!-- Logout -->
-            <v-list-item @click="logout">
-
-                <template #prepend>
-                    <v-icon>
-                        mdi-power
-                    </v-icon>
-                </template>
-
-                <v-list-item-title>
-                    Logout
-                </v-list-item-title>
-            </v-list-item>
-        </v-list>
-    </v-menu>
-
-    <v-navigation-drawer 
-    v-model= "drawer" 
-    :rail="rail">
-        <v-list-item title="Kamwesh Company">
-            <template #append>
+    <v-app-bar
+        elevation="0"
+        color="transparent"
+        >
+        <v-spacer></v-spacer>
+        <v-menu>
+            <template #activator="{ props }">
                 <v-btn
-                    :icon="rail ? 'mdi-chevron-right' : 'mdi-chevron-left'"
+                    v-bind="props"
                     variant="text"
-                    @click="rail = !rail"
-                />
+                >
+                    <v-icon start>
+                        mdi-account-circle
+                    </v-icon>
+
+                    {{ username }}
+
+                    <v-icon end>
+                        mdi-chevron-down
+                    </v-icon>
+                </v-btn>
             </template>
+
+            <v-list>
+                <!-- Profile -->
+                <v-list-item to="/profile">
+                    <template #prepend>
+                        <v-icon>mdi-account</v-icon>
+                    </template>
+
+                    <v-list-item-title>
+                        Profile
+                    </v-list-item-title>
+                </v-list-item>
+
+                <v-divider/>
+
+                <!-- Logout -->
+                <v-list-item @click="logout">
+
+                    <template #prepend>
+                        <v-icon>mdi-power</v-icon>
+                    </template>
+
+                    <v-list-item-title>
+                        Logout
+                    </v-list-item-title>
+                </v-list-item>
+            </v-list>
+        </v-menu>
+    </v-app-bar>
+
+    <v-navigation-drawer
+        v-model= "drawer" 
+        :rail="rail"
+        rounded="xl"
+    >
+        <v-list-item >
+                <template #title>
+                    <span class="font-weight-bold text-h6">
+                    Kamwesh Company
+                    </span>
+                </template>
+
+                <template #append>
+                    <v-btn
+                        :icon="rail ? 'mdi-chevron-right' : 'mdi-chevron-left'"
+                        variant="text"
+                        @click="rail = !rail"
+                    />
+                </template>
         </v-list-item>
         <v-list>
-            <v-list-item to="/home">
+            <v-list-item to="/home" rounded="lg">
                 <template #prepend>
                     <v-icon>mdi-home</v-icon>
                 </template>
@@ -72,8 +81,7 @@
                 </template> 
             </v-list-item>
 
-            <v-list-item to="/possessions"
->
+            <v-list-item to="/possessions" rounded="lg">
                 <template #prepend>
                     <v-icon>mdi-package-variant</v-icon>
                 </template>
@@ -81,9 +89,8 @@
                     Possessions
                 </template> 
             </v-list-item>
-            
-            <v-list-item to="/tasks"
->
+                        
+            <v-list-item to="/tasks" rounded="lg">
                 <template #prepend>
                     <v-icon>mdi-account-hard-hat</v-icon>
                 </template>
@@ -92,7 +99,7 @@
                 </template> 
             </v-list-item>
 
-            <v-list-item to="/checkin">
+            <v-list-item to="/checkin" rounded="lg">
                 <template #prepend>
                     <v-icon>mdi-clipboard-text-clock-outline</v-icon>
                 </template>
