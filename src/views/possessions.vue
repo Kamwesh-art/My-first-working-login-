@@ -143,6 +143,7 @@
 import { ref,onMounted } from "vue"
 import api from "@/api/axios"
 import { useToast } from "vue-toastification"
+
 const serialno = ref("")
 const item = ref("")
 const quantity = ref("")
@@ -172,16 +173,22 @@ const savePossession = async() => {
             console.log(error.response?.data)
         }
     }
-    // const possessions = ref([]);
-const fetchPossessions = async () => {
+    const possessions = ref([]);
+    const fetchPossessions = async () => {
         try {
-        const response = await api.get("possessions/");
-        possessions.value = response.data;
+        const response = await api.get("possessions/")
+        console.log('Possessions:', response.data)
+        possessions.value = response.data
+
     } catch (error) {
-        console.error("Error fetching possessions:", error);
-        toast.error("Unable to load possessions");
+        console.error("Error fetching possessions:", error)
+        toast.error("Unable to load possessions")
     }
 }
+
+onMounted(() => {
+    fetchPossessions()
+})
 const dialog = ref(false)
 const toast = useToast()
 

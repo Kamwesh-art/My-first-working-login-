@@ -72,7 +72,7 @@
                 </template>
         </v-list-item>
         <v-list>
-            <v-list-item to="/home" rounded="lg">
+            <v-list-item to="/home" rounded="xl">
                 <template #prepend>
                     <v-icon>mdi-home</v-icon>
                 </template>
