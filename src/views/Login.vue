@@ -255,14 +255,17 @@ const signin= async()=>{
             username:emailUsername.value,
             password:password.value,
             }
-            const response =await api.post("login/", payload,)
+            const response =await api.post("login/", payload)
+            console.log("LOGIN RESPONSE:", response.data)
 
         localStorage.setItem("access",response.data.access)
         localStorage.setItem("refresh",response.data.refresh)
         localStorage.setItem("username",response.data.username)
+        localStorage.setItem("email", response.data.email)
+
 
         toast.success('Login successful')
-        router.push("/home")
+        router.push("/")
 
         }catch(error){
             toast.error('Login failure')

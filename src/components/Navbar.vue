@@ -1,8 +1,18 @@
 <template>
+    <!-- top app bar -->
     <v-app-bar
-        elevation="0"
-        color="transparent"
+        height="64"
+        elevation="2"
+        color="grey-darken-3"
+        style="background-color:whitesmoke ;"
         >
+        <v-btn
+        icon="mdi-menu"
+        variant="text"
+        color="black"
+        @click="rail = !rail"
+        />
+
         <v-spacer></v-spacer>
         <v-menu>
             <template #activator="{ props }">
@@ -21,24 +31,26 @@
                     </v-icon>
                 </v-btn>
             </template>
+            <v-list min-width="250">
 
-            <v-list>
-                <!-- Profile -->
-                <v-list-item to="/profile">
+                <!-- User information -->
+                <v-list-item>
                     <template #prepend>
-                        <v-icon>mdi-account</v-icon>
+                        <v-icon>mdi-account-circle</v-icon>
                     </template>
 
-                    <v-list-item-title>
-                        Profile
+                    <v-list-item-title class="font-weight-bold">
+                        {{ username }}
                     </v-list-item-title>
+                    <v-list-item-subtitle>
+                        {{ email }}
+                    </v-list-item-subtitle>
                 </v-list-item>
 
-                <v-divider/>
+                <v-divider />
 
                 <!-- Logout -->
                 <v-list-item @click="logout">
-
                     <template #prepend>
                         <v-icon>mdi-power</v-icon>
                     </template>
@@ -51,28 +63,30 @@
         </v-menu>
     </v-app-bar>
 
+    <!-- Navigation drawer  -->
     <v-navigation-drawer
         v-model= "drawer" 
         :rail="rail"
         rounded="xl"
     >
-        <v-list-item >
-                <template #title>
-                    <span class="font-weight-bold text-h6">
-                    Kamwesh Company
-                    </span>
-                </template>
+        <v-list-item
+            to="/profile"
+            rounded="xl"
+            >
+            <template #prepend>
+                <v-icon size="28">
+                    mdi-account-circle
+                </v-icon>
+            </template>
 
-                <template #append>
-                    <v-btn
-                        :icon="rail ? 'mdi-chevron-right' : 'mdi-chevron-left'"
-                        variant="text"
-                        @click="rail = !rail"
-                    />
-                </template>
+            <template #title>
+                Profile
+            </template>
         </v-list-item>
+
+        <!-- Navigation bar -->
         <v-list>
-            <v-list-item to="/home" rounded="xl">
+            <v-list-item to="/" rounded="xl">
                 <template #prepend>
                     <v-icon>mdi-home</v-icon>
                 </template>
@@ -127,12 +141,16 @@ const rail = ref(false)
 const username = ref(
     localStorage.getItem("username") || "User"
 )
+const email = ref(
+    localStorage.getItem("email") || ""
+)
 
 const logout = () => {
 
     localStorage.removeItem("access")
     localStorage.removeItem("refresh")
     localStorage.removeItem("username")
+    localStorage.removeItem("email")
 
     router.push("/login")
 }

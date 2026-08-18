@@ -1,6 +1,8 @@
 <template>
+  
   <v-app>
-    <Navbar v-if="route.path !== '/'" />
+    
+    <Navbar v-if="route.path !== '/login'"  />
     <v-main>
 
       <router-view />

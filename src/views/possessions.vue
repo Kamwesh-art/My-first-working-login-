@@ -140,9 +140,10 @@
 </template>
 
 <script setup>
-import { ref,onMounted } from "vue"
 import api from "@/api/axios"
+import { ref,onMounted } from "vue"
 import { useToast } from "vue-toastification"
+import { getUserIdFromToken } from "@/utils/auth"
 
 const serialno = ref("")
 const item = ref("")
@@ -151,32 +152,40 @@ const cost = ref("")
 
 const savePossession = async() => {
     try{
-    const payload={
+        const userId = getUserIdFromToken()
+        const payload={
             // id: Date.now(),
             serialno: serialno.value,
             item: item.value,
             quantity: quantity.value,
             cost: cost.value,
 
-        } 
-    await api.post("possessions/",payload)
+            } 
+        await api.post(`addpossessions/${userId}/`,payload)
 
-        fetchPossessions()
-        dialog.value = false
+            fetchPossessions()
+            dialog.value = false
 
-        serialno.value = ""
-        item.value = ""
-        quantity.value = ""
-        cost.value = ""
-        }
-        catch(error){
-            console.log(error.response?.data)
+            serialno.value = ""
+            item.value = ""
+            quantity.value = ""
+            cost.value = ""
+            }
+    catch(error){
+        console.log(error.response?.data)
         }
     }
-    const possessions = ref([]);
-    const fetchPossessions = async () => {
-        try {
-        const response = await api.get("possessions/")
+
+const possessions = ref([]);
+// user_id = localStorage.getItem("user_id")
+// console.log("User ID", user_id)
+const fetchPossessions = async () => {
+    try {
+        const userId = getUserIdFromToken()
+
+        console.log("User ID:", userId)
+
+        const response = await api.get(`getpossessions/${userId}`)
         console.log('Possessions:', response.data)
         possessions.value = response.data
 
