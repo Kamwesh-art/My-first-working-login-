@@ -255,8 +255,8 @@ const signin= async()=>{
             username:emailUsername.value,
             password:password.value,
             }
-            const response =await api.post("login/", payload)
-            console.log("LOGIN RESPONSE:", response.data)
+        const response =await api.post("login/", payload)
+        console.log("LOGIN RESPONSE:", response.data)
 
         localStorage.setItem("access",response.data.access)
         localStorage.setItem("refresh",response.data.refresh)

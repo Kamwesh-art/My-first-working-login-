@@ -49,15 +49,34 @@
                                 size="small"
                                 variant="text"
                                 color="blue"
+                                @click="editPossession(item)"
                                 />
+
                                 <v-btn
                                 class="ma-2"
                                 icon="mdi-delete"
                                 size="small"
                                 variant="text"
                                 color="red"
+                                @click="deletePossession(item)"
                                 />
                             </td>
+                           <v-text-field
+                                    v-model="editedPossession.serialno"
+                                    label="Serial Number"
+                                />
+                            <v-text-field
+                                    v-model="editedPossession.item"
+                                    label="Item"
+                                />
+                            <v-text-field
+                                    v-model="editedPossession.quantity"
+                                    label="Quantity"
+                                />
+                            <v-text-field
+                                    v-model="editedPossession.cost"
+                                    label="Cost"
+                                />
                         </tr>
                     </tbody>
                 </v-data-table>
@@ -198,6 +217,55 @@ const fetchPossessions = async () => {
 onMounted(() => {
     fetchPossessions()
 })
+
+const editPossessions=(item)=>{
+    editedPossession.value = {
+        id: item.id,
+        serialno: item.serialno,
+        item: item.item,
+        quantity: item.quantity,
+        cost: item.cost
+    }
+    editDialog.value = true
+}
+
+const editDialog = ref(false)
+
+const saveEdit = async () => {
+
+    try {
+        await api.patch(
+            `updatepossessions/${editedPossession.value.id}/`,
+            editedPossession.value
+        )
+        toast.success("Possession updated successfully")
+
+        editDialog.value = false
+        await fetchPossessions()
+
+    } catch (error) {
+        console.error(error)
+        toast.error("Unable to update possession")
+    }
+}
+const deletePossession = async (item) => {
+
+    try {
+        await api.delete(
+            `deletepossessions/${item.id}/`
+        )
+        toast.success("Possession deleted successfully")
+        await fetchPossessions()
+
+    } catch (error) {
+        console.error(error)
+        toast.error("Unable to delete possession")
+    }
+}
+const deletePossessions=(item)=>{
+
+}
+
 const dialog = ref(false)
 const toast = useToast()
 
