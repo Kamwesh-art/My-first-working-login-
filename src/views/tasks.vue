@@ -24,23 +24,25 @@
                 <v-data-table>
                     <thead>
                         <tr>
-                            <th>Serial No.</th>
-                            <th>Item</th>
-                            <th>Quantity</th>
-                            <th>Cost(Ksh)</th>
+                            <th>Task No.</th>
+                            <th>Task</th>
+                            <th>Description</th>
+                            <th>ETA</th>
+                            <th>Is Done</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
 
                     <tbody>
                         <tr
-                        v-for="item in task"
-                        :key="item.id"
+                        v-for="(task,index) in task"
+                        :key="task.id || index"
                         >
-                            <td>{{ item.serialno}}</td>
-                            <td>{{ item.item }}</td>
-                            <td>{{ item.quantity }}</td>
-                            <td>{{ item.cost }}</td>
+                            <td>{{ index + 1 }}</td>
+                            <td>{{ task.task}}</td>
+                            <td>{{ task.description }}</td>
+                            <td>{{ task.ETA }}</td>
+                            <td>{{ task.is_done ? 'Yes':'No' }}</td>
                             
                             <td>
                                 <v-btn
@@ -49,7 +51,7 @@
                                 size="small"
                                 variant="text"
                                 color="blue"
-                                @click="edit(item)"
+                                @click="editTask(task)"
                                 />
 
                                 <v-dialog v-model="editDialog" max-width="500">
@@ -61,22 +63,21 @@
 
                                             <v-card-text>
                                                 <v-text-field
-                                                    label="Serial Number"
-                                                    v-model="editedTask.serialno"
+                                                    label="Task"
+                                                    v-model="editedTask.task"
                                                 />
                                                 <v-text-field
-                                                    label="Item"
-                                                    v-model="editedTask.item"
+                                                    label="Description"
+                                                    v-model="editedTask.description"
                                                 />
                                                 <v-text-field
-                                                    label="Quantity"
-                                                    v-model="editedTask.quantity"
+                                                    label="ETA"
+                                                    v-model="editedTask.ETA"
                                                     type="number"
                                                 />
                                                 <v-text-field
-                                                    label="Cost"
-                                                    v-model="edite.cost"
-                                                    type="number"
+                                                    label="Is done"
+                                                    v-model="editedTask.is_done"
                                                 />
 
                                             </v-card-text>
@@ -125,42 +126,38 @@
                         <v-card>
 
                             <v-card-title>
-                            Task
+                             Add Task
                             </v-card-title>
 
                             <v-card-text>
                                 <v-row>
                                     <v-col cols="12" md="6">
-                                        Serial Number
+                                        Task 
                                         <v-text-field
-                                        placeholder="hepho001"
-                                        v-model="serialno"
+                                        placeholder="e.g Development"
+                                        v-model="task"
                                         />
                                     </v-col>
                                     <v-col cols="12" md="6">
-                                        Item
+                                        Description
                                         <v-text-field
-                                        placeholder="e.g Headphones"
-                                        v-model="item"
+                                        placeholder="e.g Frontend"
+                                        v-model="description"
                                         />
                                     </v-col>
                                 </v-row>
 
                                 <v-row> 
                                         <v-col cols="12" md="6">
-                                        Quantity
+                                        ETA
                                         <v-text-field
-                                        placeholder="e.g 2"
-                                        v-model="quantity"
-                                        Serial Number
+                                        placeholder="e.g Hours/Days"
+                                        v-model="ETA"
+                                        type="number"
                                         />
                                     </v-col>
                                     <v-col cols="12" md="6">
-                                        Cost
-                                        <v-text-field
-                                        placeholder="7,000"
-                                        v-model="cost"
-                                        />
+                                       <v-checkbox label="Is Done" v-model="is_done" />
                                     </v-col>
                                 </v-row>
 
@@ -188,7 +185,7 @@
 
                     </v-dialog>
 
-                    </v-card>
+            </v-card>
         </v-container>
     </v-img>
 </template>
@@ -199,48 +196,51 @@ import { ref,onMounted } from "vue"
 import { useToast } from "vue-toastification"
 import { getUserIdFromToken } from "@/utils/auth"
 
-const editDialog = ref(false)
-const serialno = ref("")
-const item = ref("")
-const quantity = ref("")
-const cost = ref("")
+const tasks = ref([])
 const dialog = ref(false)
-const toast = useToast()
+const editDialog = ref(false)
+
+const taskName = ref("")
+const description = ref("")
+const ETA = ref("")
+const is_done = ref("")
 const editedTask = ref({})
 
+const toast = useToast()
 
 const saveTask = async() => {
     try{
         const userId = getUserIdFromToken()
         const payload={
             // id: Date.now(),
-            serialno: serialno.value,
-            item: item.value,
-            quantity: quantity.value,
-            cost: cost.value,
+            task: taskName.value,
+            description: description.value,
+            ETA: ETA.value,
+            is_done: is_done.value,
             } 
         await api.post(`addTasks/${userId}/`,payload)
+        toast.success("Task added successfully")
         await fetchTasks()
-        dialog.value = false
 
-            serialno.value = ""
-            item.value = ""
-            quantity.value = ""
-            cost.value = ""
+        dialog.value = false
+            taskName.value = ""
+            description.value = ""
+            ETA.value = ""
+            is_done.value = false
             }
     catch(error){
         console.log(error.response?.data)
+        toast.error("Failed to add task")
         }
     }
 
-const tasks = ref([]);
+// const tasks = ref([])
 // user_id = localStorage.getItem("user_id")
 // console.log("User ID", user_id)
 const fetchTasks = async () => {
     try {
         const userId = getUserIdFromToken()
-
-        console.log("User ID:", userId)
+        // console.log("User ID:", userId)
 
         const response = await api.get(`getTasks/${userId}`)
         console.log('Tasks:', response.data)
@@ -256,13 +256,13 @@ onMounted(() => {
     fetchTasks()
 })
 
-const editTask=(item)=>{
+const editTask=(task)=>{
     editedTask.value = {
-        id: item.id,
-        serialno: item.serialno,
-        item: item.item,
-        quantity: item.quantity,
-        cost: item.cost
+        id: task.id,
+        task: task.task,
+        description: task.description,
+        ETA: task.ETA,
+        is_done: task.is_done
     }
     editDialog.value = true
 }
@@ -271,13 +271,11 @@ const editTask=(item)=>{
 const saveEdit = async () => {
     try {
         const userId = getUserIdFromToken()
-
         await api.put(`updatetasks/${userId}/`, editedTask.value)
         toast.success("Task updated successfully")
 
         editDialog.value = false
         await fetchTasks()
-
     } catch (error) {
         console.error(error)
         toast.error("Unable to update task")
@@ -290,7 +288,6 @@ const deleteTask = async (task) => {
 
     if (!confirmed) {
         return
-    }
     try {
         await api.delete(`deletetask/${task.id}/`,task.data)
 
@@ -301,8 +298,7 @@ const deleteTask = async (task) => {
         console.error(error)
         toast.error("Unable to delete task")
     }
+    }
 }
-
-
 </script>
 
