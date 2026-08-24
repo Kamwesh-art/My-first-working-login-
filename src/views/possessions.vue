@@ -67,7 +67,7 @@
                             </template>
                         </v-data-table>
 
-                        <v-dialog v-model="editDialog" max-width="500">
+        <v-dialog v-model="editDialog" max-width="500">
           <v-card class="pa-2">
             <v-card-title class="text-h6 font-weight-bold">
               Edit Possession

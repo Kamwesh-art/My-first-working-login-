@@ -25,7 +25,6 @@ import 'unfonts.css'
 import 'virtual:uno.css'
 import './styles/main.scss'
 
-
 const app = createApp(App)
 
 // Toaster
