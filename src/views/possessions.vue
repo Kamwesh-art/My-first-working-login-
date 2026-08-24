@@ -5,14 +5,15 @@
     height='100vh'
     >   
         <v-container>
-            <v-card class="pa-5">
+            <v-card class="pa-5 elevation-4 rounded-lg" >
                 <v-row class="align-center mb-5">
                     <v-col>
-                    <h2>Possessions</h2>
+                    <h2 class="text-h5 font-weight-bold text-primary">Possessions</h2>
                     </v-col>
                 
                     <v-col class="text-right">
                         <v-btn 
+                        prepend-icon="mdi-plus"
                         @click="dialog=true"
                         color="grey-lighten-2"
                         >
@@ -21,175 +22,161 @@
                     </v-col>
                 </v-row>
 
-                <v-data-table>
-                    <thead>
-                        <tr>
-                            <th>Serial No.</th>
-                            <th>Item</th>
-                            <th>Quantity</th>
-                            <th>Cost(Ksh)</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        <tr
-                        v-for="item in possessions"
-                        :key="item.id"
-                        >
-                            <td>{{ item.serialno}}</td>
-                            <td>{{ item.item }}</td>
-                            <td>{{ item.quantity }}</td>
-                            <td>{{ item.cost }}</td>
-                            
-                            <td>
+                <v-row class="mb-2">
+                    <v-col cols="12" md="4">
+                        <v-text-field
+                        v-model="search"
+                        prepend-inner-icon="mdi-magnify"
+                        label="Search possessions..."
+                        single-line
+                        hide-details
+                        density="compact"
+                        variant="outlined"
+                        ></v-text-field>
+                    </v-col>
+                </v-row>
+                    <!-- </v-dialog> -->
+                        <v-data-table
+                            :headers="headers"
+                            :items="possessions"
+                            :search="search"
+                            :items-per-page="5"
+                            :items-per-page-options="[5, 10, 15, -1]"
+                            class="elevation-1 rounded-lg"
+                            hover
+                            ma="2"
+                            >
+                            <template v-slot:item.cost="{ item }">
+                                Ksh {{ Number(item.cost).toLocaleString() }}
+                            </template>
+                            <template v-slot:item.actions="{ item }">
                                 <v-btn
-                                class="ma-2"
                                 icon="mdi-pencil"
                                 size="small"
                                 variant="text"
                                 color="blue"
                                 @click="editPossession(item)"
                                 />
-
-                                <v-dialog v-model="editDialog" max-width="500">
-
-                                        <v-card>
-                                            <v-card-title>
-                                                Edit Possession
-                                            </v-card-title>
-
-                                            <v-card-text>
-                                                <v-text-field
-                                                    label="Serial Number"
-                                                    v-model="editedPossession.serialno"
-                                                />
-                                                <v-text-field
-                                                    label="Item"
-                                                    v-model="editedPossession.item"
-                                                />
-                                                <v-text-field
-                                                    label="Quantity"
-                                                    v-model="editedPossession.quantity"
-                                                    type="number"
-                                                />
-                                                <v-text-field
-                                                    label="Cost"
-                                                    v-model="editedPossession.cost"
-                                                    type="number"
-                                                />
-
-                                            </v-card-text>
-
-                                            <v-card-actions>
-                                                <v-spacer />
-                                                <v-btn
-                                                    @click="editDialog = false"
-                                                >
-                                                    Cancel
-                                                </v-btn>
-
-                                                <v-btn
-                                                    color="primary"
-                                                    @click="saveEdit"
-                                                >
-                                                    Save
-                                                </v-btn>
-
-                                            </v-card-actions>
-
-                                        </v-card>
-
-                                    </v-dialog>
-
                                 <v-btn
-                                class="ma-2"
+                                icon="mdi-delete"
                                 size="small"
                                 variant="text"
                                 color="red"
                                 @click="deletePossession(item)"
-                                >
-                                    <v-icon color="red">mdi-delete</v-icon>
-                                </v-btn>
+                                />
+                            </template>
+                        </v-data-table>
 
-                            </td>
-                        </tr>
-                    </tbody>
-                </v-data-table>
+                        <v-dialog v-model="editDialog" max-width="500">
+          <v-card class="pa-2">
+            <v-card-title class="text-h6 font-weight-bold">
+              Edit Possession
+            </v-card-title>
 
-                <!-- creation of a table dialog -->
-                    <v-dialog
-                        v-model="dialog"
-                        max-width="600"
-                        >
-                        <v-card>
+            <v-card-text>
+              <v-text-field
+                label="Serial Number"
+                v-model="editedPossession.serialno"
+                variant= "outlined"
+                density="compact"
+                class="mb-2"
+              />
+              <v-text-field
+                label="Item"
+                v-model="editedPossession.item"
+                variant="outlined"
+                density="compact"
+                class="mb-2"
+              />
+              <v-text-field
+                label="Quantity"
+                v-model="editedPossession.quantity"
+                type="number"
+                variant="outlined"
+                density="compact"
+                class="mb-2"
+              />
+              <v-text-field
+                label="Cost (Ksh)"
+                v-model="editedPossession.cost"
+                type="number"
+                variant="outlined"
+                density="compact"
+              />
+            </v-card-text>
 
-                            <v-card-title>
-                            Possession
-                            </v-card-title>
+            <v-card-actions>
+              <v-spacer />
+              <v-btn variant="text" @click="editDialog = false">
+                Cancel
+              </v-btn>
+              <v-btn color="primary" variant="elevated" @click="saveEdit">
+                Save
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
 
-                            <v-card-text>
-                                <v-row>
-                                    <v-col cols="12" md="6">
-                                        Serial Number
-                                        <v-text-field
-                                        placeholder="hepho001"
-                                        v-model="serialno"
-                                        />
-                                    </v-col>
-                                    <v-col cols="12" md="6">
-                                        Item
-                                        <v-text-field
-                                        placeholder="e.g Headphones"
-                                        v-model="item"
-                                        />
-                                    </v-col>
-                                </v-row>
+        <v-dialog v-model="dialog" max-width="600">
+          <v-card class="pa-2">
+            <v-card-title class="text-h6 font-weight-bold">
+              Add New Possession
+            </v-card-title>
 
-                                <v-row> 
-                                        <v-col cols="12" md="6">
-                                        Quantity
-                                        <v-text-field
-                                        placeholder="e.g 2"
-                                        v-model="quantity"
-                                        Serial Number
-                                        />
-                                    </v-col>
-                                    <v-col cols="12" md="6">
-                                        Cost
-                                        <v-text-field
-                                        placeholder="7,000"
-                                        v-model="cost"
-                                        />
-                                    </v-col>
-                                </v-row>
+            <v-card-text>
+            <v-row density="compact">
+                <v-col cols="12" md="6">
+                  <v-text-field
+                    label="Serial Number"
+                    placeholder="e.g. hepho001"
+                    v-model="serialno"
+                    variant="outlined"
+                  />
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-text-field
+                    label="Item"
+                    placeholder="e.g. Headphones"
+                    v-model="item"
+                    variant="outlined"
+                  />
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-text-field
+                    label="Quantity"
+                    placeholder="e.g. 2"
+                    v-model="quantity"
+                    type="number"
+                    variant="outlined"
+                  />
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-text-field
+                    label="Cost (Ksh)"
+                    placeholder="e.g. 7000"
+                    v-model="cost"
+                    type="number"
+                    variant="outlined"
+                  />
+                </v-col>
+            </v-row>
+            </v-card-text>
 
-                                <v-card-actions>
-                                    <v-spacer/>
-                                    <v-btn
-                                    text
-                                    @click="dialog=false"
-                                    >
-                                    Cancel
-                                    </v-btn>
+            <v-card-actions>
+              <v-spacer />
+              <v-btn variant="text" @click="dialog = false">
+                Cancel
+              </v-btn>
+              <v-btn color="primary" variant="elevated" @click="savePossession">
+                Save
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
 
-                                    <v-btn
-                                    color="primary"
-                                    @click="savePossession"
-                                    >
-                                    Save
-                                    </v-btn>
-
-                                </v-card-actions>
-
-                            </v-card-text>
-
-                        </v-card>
-
-                    </v-dialog>
-
-                    </v-card>
-                </v-container>
+            </v-card>
+                                    
+        </v-container>
     </v-img>
 </template>
 
@@ -205,11 +192,27 @@ const item = ref("")
 const quantity = ref("")
 const cost = ref("")
 const dialog = ref(false)
-const toast = useToast()
 const editedPossession = ref({})
 
+// Search & Table Data
+const search = ref("")
+const possessions = ref([])
+const toast = useToast()
 
+const headers = [
+  { title: "ID", key: "id", sortable: true, align: "start" },
+  { title: "Serial No.", key: "serialno", sortable: true },
+  { title: "Item", key: "item", sortable: true },
+  { title: "Quantity", key: "quantity", sortable: true },
+  { title: "Cost (Ksh)", key: "cost", sortable: true },
+  { title: "Actions", key: "actions", sortable: false, align: "center" }
+]
 const savePossession = async() => {
+    // const savePossession = async () => {
+    // if (!serialno.value || !item.value || !quantity.value || !cost.value) {
+    //     toast.warning("Please fill in all required fields.")
+    //     return
+    // }
     try{
         const userId = getUserIdFromToken()
         const payload={
@@ -220,6 +223,7 @@ const savePossession = async() => {
             cost: cost.value,
             } 
         await api.post(`addpossessions/${userId}/`,payload)
+        toast.success("Possession added successfully!")
         await fetchPossessions()
         dialog.value = false
 
@@ -227,15 +231,13 @@ const savePossession = async() => {
             item.value = ""
             quantity.value = ""
             cost.value = ""
-            }
-    catch(error){
-        console.log(error.response?.data)
+    }catch(error){
+        console.log("Failed to add possession. Check backend validation.",error.response?.data)
+        // const errorMsg = error.response?.data?.message || "Failed to add possession. Check backend validation."
+        // toast.error(errorMsg)
         }
     }
 
-const possessions = ref([]);
-// user_id = localStorage.getItem("user_id")
-// console.log("User ID", user_id)
 const fetchPossessions = async () => {
     try {
         const userId = getUserIdFromToken()
@@ -302,6 +304,4 @@ const deletePossession = async (item) => {
         toast.error("Unable to delete possession")
     }
 }
-
-
 </script>
