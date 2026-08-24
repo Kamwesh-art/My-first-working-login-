@@ -61,6 +61,14 @@
                             @click="deleteTask(item)"
                             />
                         </template>
+                        <template v-slot:item.is_done="{ item }">
+                            <v-chip
+                                :color="item.is_done ? 'green' : 'orange'"
+                                size="small"
+                                >
+                                {{ item.is_done ? 'Done' : 'Pending' }}
+                            </v-chip>
+                        </template>
                 </v-data-table>
                 
 
@@ -93,6 +101,7 @@
                             variant="outlined"
                             density="compact"
                             class="mb-2"
+                            type="datetime-local"
                         />
                         <v-checkbox
                             label="IsDone "
@@ -111,7 +120,7 @@
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
-
+                <!-- add task diadlog -->
                 <v-dialog
                     v-model="dialog"
                     max-width="600"
@@ -145,7 +154,7 @@
                                     <v-text-field
                                     placeholder="e.g Hours/Days"
                                     v-model="ETA"
-                                    type="number"
+                                    type="datetime-local"
                                     />
                                 </v-col>
                                 <v-col cols="12" md="6">
@@ -207,7 +216,7 @@ const headers = [
   { title: "Task Name.", key: "task", sortable: true },
   { title: "Description", key: "description", sortable: true },
   { title: "ETA", key: "ETA", sortable: false },
-  { title: "Isdone", key: "cost", sortable: false },
+  { title: "Status", key: "is_done", sortable: true },
   { title: "Actions", key: "actions", sortable: false, align: "center" }
 ]
 
@@ -221,7 +230,8 @@ const saveTask = async() => {
             ETA: ETA.value,
             is_done: is_done.value,
             } 
-        await api.post(`addTasks/${userId}/`,payload)
+        const response=await api.post(`addtasks/${userId}/`,payload)
+        console.log("Saved task:", response.data)
         toast.success("Task added successfully")
         await fetchTasks()
 
@@ -233,7 +243,7 @@ const saveTask = async() => {
             }
     catch(error){
         console.log(error.response?.data)
-        toast.error("Failed to add task")
+        toast.error(error.response?.data?.message ||"Failed to add task")
         }
     }
 
@@ -264,7 +274,7 @@ onMounted(() => {
 const editTask=(task)=>{
     editedTask.value = {
         id: task.id,
-        taskName: task.Name,
+        task: task.task,
         description: task.description,
         ETA: task.ETA,
         is_done: task.is_done
@@ -295,7 +305,7 @@ const deleteTask = async (task) => {
         return
     }
     try {
-        await api.delete(`deletetask/${task.id}/`)
+        await api.delete(`deletetask/${task.id}/`,tasks.data)
 
         toast.success("Task deleted successfully")
         await fetchTasks()
