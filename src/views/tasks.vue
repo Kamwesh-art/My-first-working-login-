@@ -35,7 +35,7 @@
                     </v-col>
                 </v-row>
 
-                 <v-data-table
+                <v-data-table
                         :headers="headers"
                         :items="tasks"
                         :search="search"
@@ -45,6 +45,7 @@
                         hover
                         ma="2"
                         >
+                    
                         <template v-slot:item.actions="{ item }">
                             <v-btn
                             icon="mdi-pencil"
@@ -69,6 +70,11 @@
                                 {{ item.is_done ? 'Done' : 'Pending' }}
                             </v-chip>
                         </template>
+
+                        <template v-slot:item.ETA="{ item }">
+                            {{ formatDate(item.ETA) }}
+                        </template>
+
                 </v-data-table>
                 
 
@@ -83,14 +89,14 @@
                         <v-card-text>
                         <v-text-field
                             label="Task Name "
-                            v-model="editedTask.taskName"
+                            v-model="editedTask.task"
                             variant= "outlined"
                             density="compact"
                             class="mb-2"
                         />
                         <v-text-field
                             label="Description"
-                            v-model="editedTask.Description"
+                            v-model="editedTask.description"
                             variant="outlined"
                             density="compact"
                             class="mb-2"
@@ -120,6 +126,7 @@
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
+
                 <!-- add task diadlog -->
                 <v-dialog
                     v-model="dialog"
@@ -149,13 +156,14 @@
                             </v-row>
 
                             <v-row> 
-                                    <v-col cols="12" md="6">
+                                <v-col cols="12" md="6">
                                     ETA
                                     <v-text-field
-                                    placeholder="e.g Hours/Days"
                                     v-model="ETA"
                                     type="datetime-local"
+                                    variant="outlined"
                                     />
+                                    <div>Selected ETA: {{ ETA }}</div>
                                 </v-col>
                                 <v-col cols="12" md="6">
                                     <v-checkbox label="Is Done" v-model="is_done" />
@@ -220,16 +228,34 @@ const headers = [
   { title: "Actions", key: "actions", sortable: false, align: "center" }
 ]
 
+const formatDate = (dateString) => {
+    if (!dateString) return ''
+
+    const date = new Date(dateString)
+
+    const datePart = date.toLocaleDateString('en-GB')
+    const timePart = date.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+    })
+    return `${datePart}, ${timePart}`
+}
+
 const saveTask = async() => {
     try{
         const userId = getUserIdFromToken()
+        const formattedETA=ETA.value ? `${ETA.value}:00`:null
+        
         const payload={
             // id: Date.now(),
             task: taskName.value,
             description: description.value,
-            ETA: ETA.value,
+            ETA: formattedETA,
             is_done: is_done.value,
             } 
+
+        console.log("DATA BEING SENT:", payload)        
         const response=await api.post(`addtasks/${userId}/`,payload)
         console.log("Saved task:", response.data)
         toast.success("Task added successfully")
@@ -242,7 +268,10 @@ const saveTask = async() => {
             is_done.value = false
             }
     catch(error){
-        console.log(error.response?.data)
+        console.log("ADD TASK ERROR:",error.response?.data)
+        console.error("STATUS:", error.response?.status)
+        console.error("SENT DATA:", error.config?.data)
+        console.log("ETA VALUE:", ETA.value)
         toast.error(error.response?.data?.message ||"Failed to add task")
         }
     }
@@ -282,9 +311,58 @@ const editTask=(task)=>{
     editDialog.value = true
 }
 
+// const saveTask = async () => {
+//   if (!taskName.value.trim() || !description.value.trim()) {
+//     toast.warning("Please provide a Task Name and Description.")
+//     return
+//   }
 
+//   try {
+//     const userId = getUserIdFromToken()
+
+//     // 1. Properly handle empty vs. populated ETA
+//     let formattedETA = null
+//     if (ETA.value && ETA.value.trim() !== "") {
+//       const parsedDate = new Date(ETA.value)
+//       if (!isNaN(parsedDate.getTime())) {
+//         formattedETA = parsedDate.toISOString()
+//       }
+//     }
+
+//     // 2. Build payload with clean ETA value
+//     const payload = {
+//       task: taskName.value.trim(),
+//       description: description.value.trim(),
+//       ETA: formattedETA, // Sends null when empty
+//       is_done: Boolean(is_done.value)
+//     }
+
+//     console.log("DATA BEING SENT:", payload)
+//     const response = await api.post(`addtasks/${userId}/`, payload)
+    
+//     toast.success("Task added successfully")
+//     await fetchTasks()
+//     closeAddDialog()
+
+//   } catch (error) {
+//     console.error("ADD TASK ERROR:", error.response?.data)
+    
+//     // Display actual validation error from Django if present
+//     const backendErrors = error.response?.data
+//     if (backendErrors && typeof backendErrors === 'object') {
+//       const errorMsg = Object.entries(backendErrors)
+//         .map(([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`)
+//         .join(' | ')
+//       toast.error(errorMsg)
+//     } else {
+//       toast.error("Failed to add task")
+//     }
+//   }
+// }
 const saveEdit = async () => {
     try {
+        console.log("EDITED TASK BEFORE UPDATE:")
+        console.log(editedTask.value)
         const userId = getUserIdFromToken()
         await api.put(`updatetasks/${userId}/`, editedTask.value)
         toast.success("Task updated successfully.")
@@ -292,10 +370,16 @@ const saveEdit = async () => {
         editDialog.value = false
         await fetchTasks()
     } catch (error) {
-        console.error(error)
+        console.error("UPDATE ERROR:", error)
+        console.error("STATUS:", error.response?.status)
+        console.error("DATA:", error.response?.data)
+        console.error("URL:", error.config?.url)
+        console.error("SENT DATA:", error.config?.data)
+
         toast.error("Unable to update task")
     }
 }
+
 const deleteTask = async (task) => {
        const confirmed = confirm(
         `Are you sure you want to delete ${task.task}?`
@@ -305,7 +389,7 @@ const deleteTask = async (task) => {
         return
     }
     try {
-        await api.delete(`deletetask/${task.id}/`,tasks.data)
+        await api.delete(`deletetask/${task.id}/`)
 
         toast.success("Task deleted successfully")
         await fetchTasks()
