@@ -122,6 +122,14 @@
                     Check in 
                 </template> 
             </v-list-item>
+             <v-list-item to="/reports" rounded="lg">
+                <template #prepend>
+                    <v-icon>mdi-clipboard-text-multiple-outline</v-icon>
+                </template>
+                <template #title>
+                    Reports 
+                </template> 
+            </v-list-item>
         </v-list>
     </v-navigation-drawer>
 </template>

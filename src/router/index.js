@@ -3,8 +3,9 @@ import Home from '@/views/Home.vue'
 import Login from '@/views/Login.vue'
 import Possessions from '@/views/possessions.vue'
 import Tasks from '@/views/tasks.vue' 
-import profile from '@/views/profile.vue' 
+import Checkin from '@/views/checkin.vue' 
 import Profile from '../views/profile.vue'
+import Reports from '@/views/reports.vue'
 
 const routes = [
   {
@@ -31,6 +32,16 @@ const routes = [
     path: '/profile',
     name: 'profile',
     component: Profile,
+  },
+  {
+    path: '/checkin',
+    name: 'checkin',
+    component: Checkin,
+  },
+  {
+    path: '/reports',
+    name: 'reports',
+    component: Reports,
   }
 
 ]
