@@ -40,7 +40,7 @@
                             :headers="headers"
                             :items="possessions"
                             :search="search"
-                            :items-per-page="5"
+                            :items-per-page="10"
                             :items-per-page-options="[5, 10, 15, -1]"
                             class="elevation-1 rounded-lg"
                             hover

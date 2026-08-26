@@ -33,7 +33,6 @@
                                     variant="outlined"
                                     clearable
                                 />
-                                
                             </v-col>                                
                         </v-row>
                         <v-row>
@@ -55,7 +54,20 @@
                                 single-line
                                 />
                             </v-col>
-                            </v-row>
+                        </v-row>
+                        <v-data-table
+                            :headers="headers"
+                            :items="filteredRecords"
+                            :loading="loading"
+                            >
+                        </v-data-table>
+                            <v-btn
+                                color="primary"
+                                prepend-icon="mdi-file-pdf-box"
+                                @click="downloadPDF"
+                                >
+                                Download PDF
+                            </v-btn>
                     </v-col>
                 </v-row>
             </v-card>
@@ -129,5 +141,66 @@ const filteredRecords = computed(() => {
 
   return result
 })
+
+const headers = computed(() => {
+  if (reportType.value === "possessions") {
+    return [
+      { title: "Item's ID", key: "id" },
+      { title: "Serial No.", key: "serialno" },
+      { title: "Item", key: "item" },
+      { title: "Quantity", key: "quantity" },
+      { title: "Cost", key: "cost" }
+    ]
+  }
+
+  if (reportType.value === "tasks") {
+    return [
+      { title: "Task", key: "task" },
+      { title: "Description", key: "description" },
+      { title: "ETA", key: "ETA" },
+      { title: "Status", key: "status" }
+    ]
+  }
+
+  return [
+    { title: "User", key: "user" },
+    { title: "Date", key: "date" },
+    { title: "Check-in", key: "check_in" },
+    { title: "Check-out", key: "check_out" }
+  ]
+})
+
+function downloadPDF() {
+
+  const doc = new jsPDF()
+
+  doc.setFontSize(18)
+  doc.text("Kamwesh Company", 14, 20)
+
+  doc.setFontSize(14)
+
+  const title =
+    reportType.value === "possessions"
+    ? "Possessions Report"
+    : reportType.value === "tasks"
+    ? "Tasks Report"
+    : "Check-in / Check-out Report"
+
+  doc.text(title, 14, 30)
+
+  autoTable(doc, {
+    head: [
+      headers.value.map(header => header.title)
+    ],
+    body: filteredRecords.value.map(record =>
+      headers.value.map(header =>
+        record[header.key] ?? ""
+      )
+    ),
+    startY: 40
+  })
+
+  doc.save(`${reportType.value}-report.pdf`)
+}
 
 </script>
