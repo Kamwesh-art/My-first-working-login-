@@ -14,6 +14,7 @@
                                 <v-select
                                     v-model="reportType"
                                     placeholder="Report Type"
+                                    single-line
                                     :items="[
                                         { title: 'Possessions', value: 'possessions' },
                                         { title: 'Tasks', value: 'tasks' },
@@ -35,7 +36,7 @@
                                 />
                             </v-col>                                
                         </v-row>
-                        <v-row>
+                        <!-- <v-row>
                             <v-col cols="12" md="6">
                                 <v-text-field
                                 v-model="startDate"
@@ -54,20 +55,38 @@
                                 single-line
                                 />
                             </v-col>
-                        </v-row>
+                        </v-row> -->
                         <v-data-table
                             :headers="headers"
                             :items="filteredRecords"
                             :loading="loading"
+                            :items-per-page="10"
                             >
+                            <template #no-data>
+                                <div class="pa-5 text-center">
+                                No records found.
+                                </div>
+                            </template>
                         </v-data-table>
-                            <v-btn
-                                color="primary"
-                                prepend-icon="mdi-file-pdf-box"
-                                @click="downloadPDF"
-                                >
-                                Download PDF
-                            </v-btn>
+                        <v-row>                            
+                            <v-col>
+                                <v-btn
+                                    color="grey"
+                                    prepend-icon="mdi-file-pdf-box"
+                                    @click="downloadPDF"
+                                    >
+                                    Download 
+                                </v-btn>
+                            </v-col>
+                            <v-col>
+                                <v-btn
+                                    prepend-icon="mdi-printer"
+                                    @click="printReport"
+                                    >
+                                    Print
+                                </v-btn>
+                            </v-col>
+                        </v-row>
                     </v-col>
                 </v-row>
             </v-card>
@@ -79,8 +98,9 @@
 import { ref, computed, onMounted,watch } from "vue"
 import api from "@/api/axios"
 import { useToast } from "vue-toastification"
-// import jsPDF from "jspdf"
-// import autoTable from "jspdf-autotable"
+import { getUserIdFromToken } from "@/utils/auth"
+import jsPDF from "jspdf"
+import autoTable from "jspdf-autotable"
 
 const toast = useToast()
 const reportType = ref("possessions")
@@ -89,30 +109,42 @@ const search = ref("")
 const startDate = ref("")
 const endDate = ref("")
 
+const userId = getUserIdFromToken()
+
 const loading = ref(false)
 async function loadReportData() {
+  
+
+  if (!userId) {
+    toast.error("Authentication error: User ID missing.")
+    return
+  }
   loading.value = true
+  records.value = []
 
   try {
     let response
 
+    const queryParams = {}
+    if (startDate.value) queryParams.startdate = startDate.value
+    if (endDate.value) queryParams.enddate = endDate.value
+
     if (reportType.value === "possessions") {
-      response = await api.get("/api/getpossessions/")
+      response = await api.get(`exportpossessions/${userId}`,{ query_params: queryParams })
     }
     else if (reportType.value === "tasks") {
-      response = await api.get("/api/gettasks/")
+      response = await api.get(`asks/${userId}`)
     }
     else if (reportType.value === "checkin") {
-      response = await api.get("/api/getcheckin/")
+      response = await api.get(`getcheckin/${userId}`)
     }
-    records.value = response.data
+    records.value = response.data || []
 
-  } catch (error) {
+  }catch (error){
     console.error("Report Error:", error)
-
     toast.error("Failed to load report data.")
 
-  } finally {
+  }finally{
     loading.value = false
   }
 }
@@ -138,18 +170,17 @@ const filteredRecords = computed(() => {
       )
     )
   }
-
   return result
 })
 
 const headers = computed(() => {
   if (reportType.value === "possessions") {
     return [
-      { title: "Item's ID", key: "id" },
+      { title: "ID", key: "id" },
       { title: "Serial No.", key: "serialno" },
       { title: "Item", key: "item" },
       { title: "Quantity", key: "quantity" },
-      { title: "Cost", key: "cost" }
+      { title: "Cost (Ksh)", key: "cost" }
     ]
   }
 
@@ -183,10 +214,15 @@ function downloadPDF() {
     reportType.value === "possessions"
     ? "Possessions Report"
     : reportType.value === "tasks"
-    ? "Tasks Report"
-    : "Check-in / Check-out Report"
+        ? "Tasks Report"
+        : "Check-in / Check-out Report"
 
-  doc.text(title, 14, 30)
+    doc.setFontSize(14)
+    doc.text(title, 14, 30)
+
+    doc.setFontSize(10)
+    doc.text(
+        `Total Records: ${filteredRecords.value.length}`,14,37)
 
   autoTable(doc, {
     head: [
@@ -197,10 +233,21 @@ function downloadPDF() {
         record[header.key] ?? ""
       )
     ),
-    startY: 40
+    startY: 45,
+
+    styles: {
+      fontSize: 9
+    },
+    headStyles: {
+      fontStyle: "bold"
+    }
   })
 
   doc.save(`${reportType.value}-report.pdf`)
+}
+
+function printReport() {
+  window.print()
 }
 
 </script>

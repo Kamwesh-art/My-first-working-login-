@@ -74,7 +74,6 @@
                         <template v-slot:item.ETA="{ item }">
                             {{ formatDate(item.ETA) }}
                         </template>
-
                 </v-data-table>
                 
 

@@ -4,8 +4,380 @@
     cover
     height='100vh'
     >   
-    
-        
-    </v-img>
+        <v-container>
+            <v-card class="pa-5">
+                <v-row class="align-center mb-5">
+                    <v-col>
+                    <h2 class="text-h5 font-weight-bold text-primary">Checkin and Checkout</h2>
+                    </v-col>
+                
+                    <v-col class="text-right">
+                        <v-btn 
+                        prepend-icon="mdi-plus"
+                        @click="dialog=true"
+                        color="grey-lighten-2"
+                        >
+                        Add Checkin info
+                        </v-btn>
+                    </v-col>
+                </v-row>
+                <v-row class="mb-2">
+                    <v-col cols="12" md="4">
+                        <v-text-field
+                        v-model="search"
+                        prepend-inner-icon="mdi-magnify"
+                        label="Search tasks..."
+                        single-line
+                        hide-details
+                        density="compact"
+                        variant="outlined"
+                        ></v-text-field>
+                    </v-col>
+                </v-row>
 
+                <v-data-table
+                        :headers="headers"
+                        :items="checkin"
+                        :search="search"
+                        :items-per-page="10"
+                        :items-per-page-options="[5, 10, 15, -1]"
+                        class="elevation-1 rounded-lg"
+                        hover
+                        ma="2"
+                        >
+                    
+                        <template v-slot:item.actions="{ item }">
+                            <v-btn
+                            icon="mdi-pencil"
+                            size="small"
+                            variant="text"
+                            color="blue"
+                            @click="editCheckin(item)"
+                            />
+                            <v-btn
+                            icon="mdi-delete"
+                            size="small"
+                            variant="text"
+                            color="red"
+                            @click="deleteCheckin(item)"
+                            />
+                        </template>
+                </v-data-table>
+                
+
+                <!-- creation of a table dialog -->
+                <!-- edit checkin dialog -->
+                <v-dialog v-model="editDialog" max-width="500">
+                    <v-card class="pa-2">
+                        <v-card-title class="text-h6 font-weight-bold">
+                        Edit checkin
+                        </v-card-title>
+
+                        <v-card-text>
+                        <v-text-field
+                            label="Checkin "
+                            v-model="editedCheckin.date"
+                            variant= "outlined"
+                            density="compact"
+                            class="mb-2"
+                        />
+                        <v-text-field
+                            label="Arrival time"
+                            v-model="editedCheckin.arrival_time"
+                            variant="outlined"
+                            density="compact"
+                            class="mb-2"
+                        />
+                        <v-text-field
+                            label="Depature time"
+                            v-model="editedCheckin.depature_time"
+                            variant="outlined"
+                            density="compact"
+                            class="mb-2"
+                            type="datetime-local"
+                        />
+                        </v-card-text>
+
+                        <v-card-actions>
+                        <v-spacer />
+                        <v-btn variant="text" @click="editDialog = false">
+                            Cancel
+                        </v-btn>
+                        <v-btn color="primary" variant="elevated" @click="saveEdit">
+                            Save
+                        </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
+
+                <!-- add checkin diadlog -->
+                <v-dialog
+                    v-model="dialog"
+                    max-width="600"
+                    >
+                    <v-card>
+                        <v-card-title>
+                            Add New Checkin info
+                        </v-card-title>
+
+                        <v-card-text>
+                            <v-row>
+                                <v-col cols="12" md="6">
+                                    Task 
+                                    <v-text-field
+                                    placeholder="e.g Development"
+                                    v-model="checkin"
+                                    />
+                                </v-col>
+                                <v-col cols="12" md="6">
+                                    Description
+                                    <v-text-field
+                                    placeholder="e.g Frontend"
+                                    v-model="description"
+                                    />
+                                </v-col>
+                            </v-row>
+
+                            <v-row> 
+                                <v-col cols="12" md="6">
+                                    ETA
+                                    <v-text-field
+                                    v-model="ETA"
+                                    type="datetime-local"
+                                    variant="outlined"
+                                    />
+                                    <div>Selected ETA: {{ ETA }}</div>
+                                </v-col>
+                            </v-row>
+
+                            <v-card-actions>
+                                <v-spacer/>
+                                <v-btn
+                                text
+                                @click="dialog=false"
+                                >
+                                Cancel
+                                </v-btn>
+
+                                <v-btn
+                                color="primary"
+                                @click="saveCheckin"
+                                >
+                                Save
+                                </v-btn>
+
+                            </v-card-actions>
+
+                        </v-card-text>
+
+                    </v-card>
+
+                </v-dialog>
+
+            </v-card>
+        </v-container>
+    </v-img>
 </template>
+
+<script setup>
+import api from "@/api/axios"
+import { ref,onMounted } from "vue"
+import { useToast } from "vue-toastification"
+import { getUserIdFromToken } from "@/utils/auth"
+
+// const tasksName = ref([])
+const dialog = ref(false)
+const editDialog = ref(false)
+
+const search = ref("")
+const tasks=ref([])
+
+const checkin = ref("")
+const date = ref("")
+const arrival_time = ref("")
+const depaturetime = ref("")
+const editedCheckin= ref({})
+
+const toast = useToast()
+const headers = [
+  { title: "ID", key: "id", sortable: true, align: "start" },
+  { title: "Date.", key: "date", sortable: true },
+  { title: "Arrival Time", key: "description", sortable: true },
+  { title: "Depaturetime", key: "ETA", sortable: false },
+  { title: "Actions", key: "actions", sortable: false, align: "center" }
+]
+
+const formatDate = (dateString) => {
+    if (!dateString) return ''
+
+    const date = new Date(dateString)
+
+    const datePart = date.toLocaleDateString('en-GB')
+    const timePart = date.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+    })
+    return `${datePart}, ${timePart}`
+}
+
+const saveTask = async() => {
+    try{
+        const userId = getUserIdFromToken()
+        const formattedETA=ETA.value ? `${ETA.value}:00`:null
+        
+        const payload={
+            // id: Date.now(),
+            task: taskName.value,
+            description: description.value,
+            ETA: formattedETA,
+            is_done: is_done.value,
+            } 
+
+        console.log("DATA BEING SENT:", payload)        
+        const response=await api.post(`addtasks/${userId}/`,payload)
+        console.log("Saved task:", response.data)
+        toast.success("Task added successfully")
+        await fetchTasks()
+
+        dialog.value = false
+            taskName.value = ""
+            description.value = ""
+            ETA.value = ""
+            is_done.value = false
+            }
+    catch(error){
+        console.log("ADD TASK ERROR:",error.response?.data)
+        console.error("STATUS:", error.response?.status)
+        console.error("SENT DATA:", error.config?.data)
+        console.log("ETA VALUE:", ETA.value)
+        toast.error(error.response?.data?.message ||"Failed to add task")
+        }
+    }
+
+const fetchTasks = async () => {
+    try {
+        const userId = getUserIdFromToken()
+        console.log("User ID:", userId)
+
+        const response = await api.get(`gettasks/${userId}/`)
+        console.log("Status:", response.status)
+        console.log('Tasks:', JSON.stringify(response.data, null, 2))
+        tasks.value = response.data
+
+    } catch (error) {
+        console.error("Error fetching tasks:", error)
+        console.error("Response:", error.response?.data)
+        console.error("Status:", error.response?.status)
+        console.error("DATA:", error.response?.data)
+        console.error("URL:", error.config?.url)
+        toast.error("Unable to load tasks!")
+    }
+}
+
+onMounted(() => {
+    fetchTasks()
+})
+
+const editTask=(task)=>{
+    editedTask.value = {
+        id: task.id,
+        task: task.task,
+        description: task.description,
+        ETA: task.ETA,
+        is_done: task.is_done
+    }
+    editDialog.value = true
+}
+
+// const saveTask = async () => {
+//   if (!taskName.value.trim() || !description.value.trim()) {
+//     toast.warning("Please provide a Task Name and Description.")
+//     return
+//   }
+
+//   try {
+//     const userId = getUserIdFromToken()
+
+//     // 1. Properly handle empty vs. populated ETA
+//     let formattedETA = null
+//     if (ETA.value && ETA.value.trim() !== "") {
+//       const parsedDate = new Date(ETA.value)
+//       if (!isNaN(parsedDate.getTime())) {
+//         formattedETA = parsedDate.toISOString()
+//       }
+//     }
+
+//     // 2. Build payload with clean ETA value
+//     const payload = {
+//       task: taskName.value.trim(),
+//       description: description.value.trim(),
+//       ETA: formattedETA, // Sends null when empty
+//       is_done: Boolean(is_done.value)
+//     }
+
+//     console.log("DATA BEING SENT:", payload)
+//     const response = await api.post(`addtasks/${userId}/`, payload)
+    
+//     toast.success("Task added successfully")
+//     await fetchTasks()
+//     closeAddDialog()
+
+//   } catch (error) {
+//     console.error("ADD TASK ERROR:", error.response?.data)
+    
+//     // Display actual validation error from Django if present
+//     const backendErrors = error.response?.data
+//     if (backendErrors && typeof backendErrors === 'object') {
+//       const errorMsg = Object.entries(backendErrors)
+//         .map(([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`)
+//         .join(' | ')
+//       toast.error(errorMsg)
+//     } else {
+//       toast.error("Failed to add task")
+//     }
+//   }
+// }
+const saveEdit = async () => {
+    try {
+        console.log("EDITED TASK BEFORE UPDATE:")
+        console.log(editedTask.value)
+        const userId = getUserIdFromToken()
+        await api.put(`updatetasks/${userId}/`, editedTask.value)
+        toast.success("Task updated successfully.")
+
+        editDialog.value = false
+        await fetchTasks()
+    } catch (error) {
+        console.error("UPDATE ERROR:", error)
+        console.error("STATUS:", error.response?.status)
+        console.error("DATA:", error.response?.data)
+        console.error("URL:", error.config?.url)
+        console.error("SENT DATA:", error.config?.data)
+
+        toast.error("Unable to update task")
+    }
+}
+
+const deleteTask = async (task) => {
+       const confirmed = confirm(
+        `Are you sure you want to delete ${task.task}?`
+        )
+
+    if (!confirmed) {
+        return
+    }
+    try {
+        await api.delete(`deletetask/${task.id}/`)
+
+        toast.success("Task deleted successfully")
+        await fetchTasks()
+
+    } catch (error) {
+        console.error(error)
+        toast.error("Unable to delete task")
+    }
+}
+
+</script>
+
